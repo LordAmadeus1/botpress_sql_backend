@@ -23,10 +23,15 @@ async def run_query(request: Request):
   params = data.get("params", {})
 
   try:
+    print("🔵 Parámetros recibidos:", params)
+    print("🔵 Función solicitada:", fn_name)
+      
     conn = fn_get_connection()
+    print("Conectado a la base de datos")
     cur = conn.cursor()
 
     query = f"SELECT * FROM dwh.{fn_name}(%s, %s, %s, %s, %s);"
+    print("Ejecutando query", query)
 
     cur.execute(query, (
         params["p_company_name"],
@@ -41,7 +46,10 @@ async def run_query(request: Request):
     cur.close()
     conn.close()
 
+    print("bien, consulta bien")
+
     return {"result": "success", "data": result}
 
   except Exception as e:
+    print("error al ejecutar", e)
     return {"status": "error", "message": str(e)}
