@@ -9,7 +9,7 @@ Original file is located at
 
 import psycopg2
 import os
-from psycog2.extras import RealDictCursor
+from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 
 load_dotenv()
