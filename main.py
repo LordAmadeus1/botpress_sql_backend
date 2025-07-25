@@ -12,6 +12,46 @@ from db import fn_get_connection
 
 app = FastAPI()
 
+kpi_function_map = {
+    "fn_weekly_avg_ticket_by_venue": {
+        "args": ["p_company_name", "p_week_number", "p_year"]
+    },
+    "fn_estimated_profit_by_company_and_period": {
+        "args": ["p_company_name", "p_year", "p_week_number", "p_month_number"]
+    },
+    "fn_estimated_profit_by_venue_and_period": {
+        "args": ["p_company_name", "p_venue_name", "p_year", "p_week_number"]
+    },
+    "fn_total_income_by_period": {
+        "args": ["p_company_name", "p_year", "p_week_number", "p_month_number"]
+    },
+    "fn_week_total_attendees": {
+        "args": ["p_company_name", "p_week_number", "p_year"]
+    },
+    "fn_week_total_attendance_by_venue": {
+        "args": ["p_company_name", "p_week_number", "p_year"]
+    },
+    "fn_weekly_avg_income_per_attendee": {
+        "args": ["p_company_name", "p_week_number", "p_year"]
+    },
+    "fn_weekly_sales_comparison_by_section": {
+        "args": ["p_company_name", "p_week_number", "p_year"]
+    },
+    "fn_weekly_venues_income": {
+        "args": ["p_company_name", "p_week_number", "p_year", "p_month_number"]
+    },
+    "get_debit_variation_by_company_and_period": {
+        "args": ["p_company_name", "p_week_number", "p_year", "p_month_number"]
+    },
+    "get_debit_variation_by_venue_and_period": {
+        "args": ["p_company_name", "p_week_number", "p_year", "p_month_number"]
+    },
+    "get_venue_income_by_period": {
+        "args": ["p_company_name", "p_week_number", "p_year", "p_month_number"]
+    }
+}
+
+
 @app.get("/")
 def read_root():
     return {"message": "Backend connected"}
@@ -20,7 +60,9 @@ def read_root():
 async def run_query(request: Request):
   data = await request.json()
   fn_name = data.get("function")
-  params = data.get("params", {})
+  params: Dict = data.get("params", {})
+
+  print("parámetros recibidos:", params)
 
   try:
     print("🔵 Parámetros recibidos:", params)
@@ -30,16 +72,20 @@ async def run_query(request: Request):
     print("Conectado a la base de datos")
     cur = conn.cursor()
 
-    query = f"SELECT * FROM dwh.{fn_name}(%s, %s, %s, %s, %s);"
-    print("Ejecutando query", query)
+    fn_info = kpi_function_map.get(fn_name)
+    if not fn_info:
+        return {"status": "error", "message": f"Función desconocida: {fn_name}"}
 
-    cur.execute(query, (
-        params["p_company_name"],
-        params["p_venue_name"],
-        params.get("p_week_number"),
-        params.get("p_year"),
-        params.get("p_month")
-    ))
+   arg_names = fn_info["args"]
+   placeholders = ", ".join(["%s"] * len(arg_names))
+   query = f"SELECT * FROM dwh.{fn_name}({placeholders});"
+    
+   args = [params.get(arg) for arg in arg_names]
+
+    print("🟢 Ejecutando:", query)
+    print("📦 Con args:", args)
+
+    cur.execute(query, args)
 
     result = cur.fetchall()
 
