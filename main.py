@@ -71,29 +71,29 @@ async def run_query(request: Request):
     conn = fn_get_connection()
     print("Conectado a la base de datos")
     cur = conn.cursor()
-
+    
     fn_info = kpi_function_map.get(fn_name)
     if not fn_info:
         return {"status": "error", "message": f"Función desconocida: {fn_name}"}
-
-   arg_names = fn_info["args"]
-   placeholders = ", ".join(["%s"] * len(arg_names))
-   query = f"SELECT * FROM dwh.{fn_name}({placeholders});"
     
-   args = [params.get(arg) for arg in arg_names]
-
+    arg_names = fn_info["args"]
+    placeholders = ", ".join(["%s"] * len(arg_names))
+    query = f"SELECT * FROM dwh.{fn_name}({placeholders});"
+    
+    args = [params.get(arg) for arg in arg_names]
+    
     print("🟢 Ejecutando:", query)
     print("📦 Con args:", args)
-
+    
     cur.execute(query, args)
-
+    
     result = cur.fetchall()
-
+    
     cur.close()
     conn.close()
-
+    
     print("bien, consulta bien")
-
+    
     return {"result": "success", "data": result}
 
   except Exception as e:
