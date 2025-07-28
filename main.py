@@ -9,8 +9,17 @@ Original file is located at
 
 from fastapi import FastAPI, Request
 from db import fn_get_connection
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  #["https://tu-botpress-url.com"] para restringirlo
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 kpi_function_map = {
     "fn_weekly_avg_ticket_by_venue": {
