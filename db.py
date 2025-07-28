@@ -21,5 +21,6 @@ def fn_get_connection():
       database=os.getenv("DB_NAME"),
       user=os.getenv("DB_USER"),
       password=os.getenv("DB_PASSWORD"),
+      options='-c search_path=dwh,public',
       cursor_factory=RealDictCursor
   )
