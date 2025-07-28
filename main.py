@@ -80,6 +80,7 @@ async def run_query(request: Request):
     conn = fn_get_connection()
     print("Conectado a la base de datos")
     cur = conn.cursor()
+    cur.execute("SET search_path TO dwh, public;")
     
     fn_info = kpi_function_map.get(fn_name)
     if not fn_info:
