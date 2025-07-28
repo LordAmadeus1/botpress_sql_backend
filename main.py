@@ -31,13 +31,19 @@ kpi_function_map = {
     "fn_estimated_profit_by_venue_and_period": {
         "args": ["p_company_name", "p_venue_name", "p_year", "p_week_number"]
     },
+    "fn_estimated_profit_by_venues_and_week": {
+        "args": ["p_company_name", "p_year", "p_week_number"]
+    },
+    "fn_personnel_expense_ratio": {
+        "args": ["p_company_name", "p_year", "p_venue_name","p_week_number", "p_month_number"]
+    },
     "fn_total_income_by_period": {
         "args": ["p_company_name", "p_year", "p_week_number", "p_month_number"]
     },
     "fn_week_total_attendees": {
         "args": ["p_company_name", "p_week_number", "p_year"]
     },
-    "fn_week_total_attendance_by_venue": {
+    "fn_weekly_total_attendance_by_venue": {
         "args": ["p_company_name", "p_week_number", "p_year"]
     },
     "fn_weekly_avg_income_per_attendee": {
