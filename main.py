@@ -59,10 +59,10 @@ kpi_function_map = {
         "args": ["p_company_name", "p_week_number", "p_year", "p_month_number"]
     },
     "get_debit_variation_by_venue_and_period": {
-        "args": ["p_company_name", "p_week_number", "p_year", "p_month_number"]
+        "args": ["p_company_name", "p_venue_name", "p_year","p_week_number", "p_month_number"]
     },
     "get_venue_income_by_period": {
-        "args": ["p_company_name", "p_week_number", "p_year", "p_month_number"]
+        "args": ["p_company_name", "p_venue_name" , "p_year", "p_week_number", "p_month_number"]
     }
 }
 
