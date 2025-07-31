@@ -43,7 +43,7 @@ kpi_function_map = {
     "fn_week_total_attendees": {
         "args": ["p_company_name", "p_week_number", "p_year"]
     },
-    "fn_weekly_total_attendance_by_venue": {
+    "fn_weekly_attendance_by_venue": {
         "args": ["p_company_name", "p_week_number", "p_year"]
     },
     "fn_weekly_avg_income_per_attendee": {
