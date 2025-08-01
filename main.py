@@ -64,7 +64,7 @@ kpi_function_map = {
     "get_venue_income_by_period": {
         "args": ["p_company_name", "p_venue_name" , "p_year", "p_week_number", "p_month_number"]
     },
-    "personnel_expense_ratio2": {
+    "fn_personnel_expense_ratio2": {
         "args": ["p_company_name", "p_venue_name", "p_year", "p_week_number", "p_month_number"]
     },
     "fn_weekly_total_income_no_digital": {
