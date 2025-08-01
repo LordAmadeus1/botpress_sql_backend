@@ -63,33 +63,92 @@ kpi_function_map = {
     },
     "get_venue_income_by_period": {
         "args": ["p_company_name", "p_venue_name" , "p_year", "p_week_number", "p_month_number"]
+    },
+    "personnel_expense_ratio2": {
+        "args": ["p_company_name", "p_venue_name", "p_year", "p_week_number", "p_month_number"]
+    },
+    "fn_weekly_total_income_no_digital": {
+        "args": ["p_company_name", "p_week_number", "p_year"]
     }
 }
 
 def fallback_to_csv(fn_name, params):
     #lee los csv sintéticos
-    if fn_name in ["get_debit_variation_by_company_and_period", "cash_flow_synthetic"]:
+    if fn_name == "cash_flow_synthetic":
         df = pd.read_csv(CASHFLOW_CSV)
         filtered = df[
-            (df["company"] == params.get("p_company_name"))
-            & (df["year"] == params.get("p_year"))
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year"))
         ]
         return {"status": "success", "data": filtered.to_dict(orient="records")}
 
-    elif fn_name in ["cogs_synthetic"]:
+    elif fn_name == "cash_flow_synthetic_by_week":
+        df = pd.read_csv(CASHFLOW_CSV)
+        filtered = df[
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year")) &
+            (df["week_number"] == params.get("p_week_number"))
+        ]
+        return {"status": "success", "data": filtered.to_dict(orient="records")}
+
+    elif fn_name == "cash_flow_synthetic_by_venue":
+        df = pd.read_csv(CASHFLOW_CSV)
+        filtered = df[
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year")) &
+            (df["venue"] == params.get("p_venue_name"))
+        ]
+        return {"status": "success", "data": filtered.to_dict(orient="records")}
+
+    elif fn_name == "cogs_synthetic":
         df = pd.read_csv(SALES_CSV)
         filtered = df[
-            (df["company"] == params.get("p_company_name"))
-            & (df["year"] == params.get("p_year"))
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year"))
         ]
         return {"status": "success", "data": filtered.to_dict(orient="records")}
 
+    elif fn_name == "cogs_synthetic_by_venue":
+        df = pd.read_csv(SALES_CSV)
+        filtered = df[
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year")) &
+            (df["venue"] == params.get("p_venue_name"))
+        ]
+        return {"status": "success", "data": filtered.to_dict(orient="records")}
+
+    elif fn_name == "cogs_synthetic_by_week":
+        df = pd.read_csv(SALES_CSV)
+        filtered = df[
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year")) &
+            (df["week_number"] == params.get("p_week_number"))
+        ]
+        return {"status": "success", "data": filtered.to_dict(orient="records")}
     
     elif fn_name == "ebitda_synthetic":
         df = pd.read_csv(EBITDA_CSV)
         filtered = df[
-            (df["company"] == params.get("p_company_name"))
-            & (df["year"] == params.get("p_year"))
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year"))
+        ]
+        return {"status": "success", "data": filtered.to_dict(orient="records")}
+
+    elif fn_name == "ebitda_synthetic_by_month":
+        df = pd.read_csv(EBITDA_CSV)
+        filtered = df[
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year")) &
+            (df["month_number"] == params.get("p_month_number"))
+        ]
+        return {"status": "success", "data": filtered.to_dict(orient="records")}
+
+    elif fn_name == "ebitda_synthetic_by_venue":
+        df = pd.read_csv(EBITDA_CSV)
+        filtered = df[
+            (df["company"] == params.get("p_company_name")) &
+            (df["year"] == params.get("p_year")) &
+            (df["venue"] == params.get("p_venue_name"))
         ]
         return {"status": "success", "data": filtered.to_dict(orient="records")}
 
