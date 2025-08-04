@@ -1,4 +1,4 @@
-company,venue,year,week,product,product_total_price,quantity,product_unitary_price
+p_company_name,p_venue_name,p_year,p_week_number,product,product_total_price,quantity,product_unitary_price
 PALLAPIZZA,PAMPLONA,2024,1,PROD_2,134.2,10,13.42
 PALLAPIZZA,BILBAO,2024,1,PROD_9,333.63,9,37.07
 PALLAPIZZA,BURGOS,2024,1,PROD_2,228.14,17,13.42
