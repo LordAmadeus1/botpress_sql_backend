@@ -1,4 +1,4 @@
-company,venue,year,week,cash_in,cash_out
+p_company_name,p_venue_name,p_year,p_week_number,cash_in,cash_out
 PALLAPIZZA,PAMPLONA,2024,1,16051.18,26123.72
 PALLAPIZZA,BILBAO,2024,1,30963.01,8304.22
 PALLAPIZZA,BURGOS,2024,1,35186.49,9224.4
