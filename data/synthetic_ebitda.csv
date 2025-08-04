@@ -1,4 +1,4 @@
-company,venue,year,month,ingresos,interes,impuestos,depreciacion,amortizacion,ebitda
+p_company_name,p_venue_name,p_year,p_month_number,ingresos,interes,impuestos,depreciacion,amortizacion,ebitda
 PALLAPIZZA,PAMPLONA,2024,1,98861.1,3299.09,8168.57,5452.54,3347.22,119128.52
 PALLAPIZZA,PAMPLONA,2024,2,47545.41,1136.37,6587.27,3873.23,3816.2,62958.48
 PALLAPIZZA,PAMPLONA,2024,3,77570.67,1702.72,12682.55,6003.42,2218.0,100177.36
