@@ -1,4 +1,4 @@
-company,venue,date,year,week,weekday,product_code,product_name,stock,capacity
+p_company_name,p_venue_name,date,p_year,p_week_number,weekday,product_code,product_name,stock,capacity
 PALLAPIZZA,PAMPLONA,2025-01-01,2025,1,2,PROD_1,Mozzarella,121,166
 PALLAPIZZA,PAMPLONA,2025-01-01,2025,1,2,PROD_2,Aceitunas,97,136
 PALLAPIZZA,PAMPLONA,2025-01-01,2025,1,2,PROD_3,Tomate triturado,85,183
