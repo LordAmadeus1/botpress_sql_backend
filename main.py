@@ -157,34 +157,87 @@ def fallback_to_csv(fn_name, params):
 
     elif fn_name == "reservas_synthetic_by_week":
         df = pd.read_csv(RESERVAS_CSV)
-        filtered = df[
-            (df["p_company_name"] == params.get("p_company_name")) &
-            (df["p_year"] == params.get("p_year"))
-        ]
-        if params.get("p_week_number") is not None:
-            filtered = filtered[filtered["p_week_number"] == params.get("p_week_number")]
-        elif params.get("p_week_start") is not None and params.get("p_week_end") is not None:
-            filtered = filtered[
-                (filtered["p_week_number"] >= params.get("p_week_start")) &
-                (filtered["p_week_number"] <= params.get("p_week_end"))
+        # Filtro base por compañía (no filtramos por año todavía porque podría cruzar)
+        filtered_base = df[(df["p_company_name"] == params.get("p_company_name"))]
+        year = params.get("p_year")
+        week_start = params.get("p_week_number")
+        week_end = params.get("p_week_number_end")
+    
+        if week_start is not None and week_end is None:
+            # Solo una semana, mismo año
+            filtered = filtered_base[
+                (filtered_base["p_year"] == year) &
+                (filtered_base["p_week_number"] == week_start)
             ]
+        elif week_start is not None and week_end is not None:
+            if week_end >= week_start:
+                # Rango dentro del mismo año
+                filtered = filtered_base[
+                    (filtered_base["p_year"] == year) &
+                    (filtered_base["p_week_number"] >= week_start) &
+                    (filtered_base["p_week_number"] <= week_end)
+                ]
+            else:
+                # Rango cruza de año: [week_start..última del año] ∪ [1..week_end del año siguiente]
+                filtered_current_year = filtered_base[
+                    (filtered_base["p_year"] == year) &
+                    (filtered_base["p_week_number"] >= week_start)
+                ]
+                filtered_next_year = filtered_base[
+                    (filtered_base["p_year"] == year + 1) &
+                    (filtered_base["p_week_number"] <= week_end)
+                ]
+                filtered = pd.concat([filtered_current_year, filtered_next_year], ignore_index=True)
+        else:
+            # Sin semanas provistas → devuelve solo el año solicitado (o vacío si prefieres)
+            filtered = filtered_base[(filtered_base["p_year"] == year)]
+    
         return {"result": "success", "data": filtered.to_dict(orient="records")}
         
     elif fn_name == "reservas_synthetic_by_venue":
         df = pd.read_csv(RESERVAS_CSV)
-        filtered = df[
+        # Filtro base por compañía y venue (no filtramos por año todavía porque podría cruzar)
+        filtered_base = df[
             (df["p_company_name"] == params.get("p_company_name")) &
-            (df["p_venue_name"] == params.get("p_venue_name")) &
-            (df["p_year"] == params.get("p_year"))
+            (df["p_venue_name"] == params.get("p_venue_name"))
         ]
-        if params.get("p_week_number") is not None:
-            filtered = filtered[filtered["p_week_number"] == params.get("p_week_number")]
-        elif params.get("p_week_start") is not None and params.get("p_week_end") is not None:
-            filtered = filtered[
-                (filtered["p_week_number"] >= params.get("p_week_start")) &
-                (filtered["p_week_number"] <= params.get("p_week_end"))
+    
+        year = params.get("p_year")
+        week_start = params.get("p_week_number")
+        week_end = params.get("p_week_number_end")
+    
+        if week_start is not None and week_end is None:
+            # Solo una semana, mismo año
+            filtered = filtered_base[
+                (filtered_base["p_year"] == year) &
+                (filtered_base["p_week_number"] == week_start)
             ]
+    
+        elif week_start is not None and week_end is not None:
+            if week_end >= week_start:
+                # Rango dentro del mismo año
+                filtered = filtered_base[
+                    (filtered_base["p_year"] == year) &
+                    (filtered_base["p_week_number"] >= week_start) &
+                    (filtered_base["p_week_number"] <= week_end)
+                ]
+            else:
+                # Rango cruza de año: [week_start..última del año] ∪ [1..week_end del año siguiente]
+                filtered_current_year = filtered_base[
+                    (filtered_base["p_year"] == year) &
+                    (filtered_base["p_week_number"] >= week_start)
+                ]
+                filtered_next_year = filtered_base[
+                    (filtered_base["p_year"] == year + 1) &
+                    (filtered_base["p_week_number"] <= week_end)
+                ]
+                filtered = pd.concat([filtered_current_year, filtered_next_year], ignore_index=True)
+        else:
+            # Sin semanas provistas → devuelve solo el año solicitado (o vacío si prefieres)
+            filtered = filtered_base[(filtered_base["p_year"] == year)]
+    
         return {"result": "success", "data": filtered.to_dict(orient="records")}
+
 
     elif fn_name == "stock_synthetic_by_week":
         df = pd.read_csv(STOCK_CSV)
