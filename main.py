@@ -12,6 +12,9 @@ app = FastAPI()
 SALES_CSV = "data/synthetic_sales_details.csv"
 CASHFLOW_CSV = "data/synthetic_cash_flow.csv"
 EBITDA_CSV = "data/synthetic_ebitda.csv"
+RESERVAS_CSV = "data/synthetic_reservas.csv"
+STOCK_CSV = "data/synthetic_stock.csv"
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -80,7 +83,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_company_name"] == params.get("p_company_name")) &
             (df["p_year"] == params.get("p_year"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
 
     elif fn_name == "cash_flow_synthetic_by_week":
         df = pd.read_csv(CASHFLOW_CSV)
@@ -89,7 +92,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_year"] == params.get("p_year")) &
             (df["p_week_number"] == params.get("p_week_number"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
 
     elif fn_name == "cash_flow_synthetic_by_venue":
         df = pd.read_csv(CASHFLOW_CSV)
@@ -98,7 +101,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_year"] == params.get("p_year")) &
             (df["p_venue_name"] == params.get("p_venue_name"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
 
     elif fn_name == "cogs_synthetic":
         df = pd.read_csv(SALES_CSV)
@@ -106,7 +109,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_company_name"] == params.get("p_company_name")) &
             (df["p_year"] == params.get("p_year"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
 
     elif fn_name == "cogs_synthetic_by_venue":
         df = pd.read_csv(SALES_CSV)
@@ -115,7 +118,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_year"] == params.get("p_year")) &
             (df["p_venue_name"] == params.get("p_venue_name"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
 
     elif fn_name == "cogs_synthetic_by_week":
         df = pd.read_csv(SALES_CSV)
@@ -124,7 +127,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_year"] == params.get("p_year")) &
             (df["p_week_number"] == params.get("p_week_number"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
     
     elif fn_name == "ebitda_synthetic":
         df = pd.read_csv(EBITDA_CSV)
@@ -132,7 +135,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_company_name"] == params.get("p_company_name")) &
             (df["p_year"] == params.get("p_year"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
 
     elif fn_name == "ebitda_synthetic_by_month":
         df = pd.read_csv(EBITDA_CSV)
@@ -141,7 +144,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_year"] == params.get("p_year")) &
             (df["p_month_number"] == params.get("p_month_number"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
 
     elif fn_name == "ebitda_synthetic_by_venue":
         df = pd.read_csv(EBITDA_CSV)
@@ -150,10 +153,72 @@ def fallback_to_csv(fn_name, params):
             (df["p_year"] == params.get("p_year")) &
             (df["p_venue_name"] == params.get("p_venue_name"))
         ]
-        return {"status": "success", "data": filtered.to_dict(orient="records")}
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
 
+    elif fn_name == "reservas_synthetic_by_week":
+        df = pd.read_csv(RESERVAS_CSV)
+        filtered = df[
+            (df["p_company_name"] == params.get("p_company_name")) &
+            (df["p_year"] == params.get("p_year"))
+        ]
+        if params.get("p_week_number") is not None:
+            filtered = filtered[filtered["p_week_number"] == params.get("p_week_number")]
+        elif params.get("p_week_start") is not None and params.get("p_week_end") is not None:
+            filtered = filtered[
+                (filtered["p_week_number"] >= params.get("p_week_start")) &
+                (filtered["p_week_number"] <= params.get("p_week_end"))
+            ]
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
+        
+    elif fn_name == "reservas_synthetic_by_venue":
+        df = pd.read_csv(RESERVAS_CSV)
+        filtered = df[
+            (df["p_company_name"] == params.get("p_company_name")) &
+            (df["p_venue_name"] == params.get("p_venue_name")) &
+            (df["p_year"] == params.get("p_year"))
+        ]
+        if params.get("p_week_number") is not None:
+            filtered = filtered[filtered["p_week_number"] == params.get("p_week_number")]
+        elif params.get("p_week_start") is not None and params.get("p_week_end") is not None:
+            filtered = filtered[
+                (filtered["p_week_number"] >= params.get("p_week_start")) &
+                (filtered["p_week_number"] <= params.get("p_week_end"))
+            ]
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
+
+    elif fn_name == "stock_synthetic_by_week":
+        df = pd.read_csv(STOCK_CSV)
+        filtered = df[
+            (df["p_company_name"] == params.get("p_company_name")) &
+            (df["p_year"] == params.get("p_year"))
+        ]
+        if params.get("p_week_number") is not None:
+            filtered = filtered[filtered["p_week_number"] == params.get("p_week_number")]
+        elif params.get("p_week_start") is not None and params.get("p_week_end") is not None:
+            filtered = filtered[
+                (filtered["p_week_number"] >= params.get("p_week_start")) &
+                (filtered["p_week_number"] <= params.get("p_week_end"))
+            ]
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
+
+    elif fn_name == "stock_synthetic_by_venue":
+        df = pd.read_csv(STOCK_CSV)
+        filtered = df[
+            (df["p_company_name"] == params.get("p_company_name")) &
+            (df["p_venue_name"] == params.get("p_venue_name")) &
+            (df["p_year"] == params.get("p_year"))
+        ]
+        if params.get("p_week_number") is not None:
+            filtered = filtered[filtered["p_week_number"] == params.get("p_week_number")]
+        elif params.get("p_week_start") is not None and params.get("p_week_end") is not None:
+            filtered = filtered[
+                (filtered["p_week_number"] >= params.get("p_week_start")) &
+                (filtered["p_week_number"] <= params.get("p_week_end"))
+            ]
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
+    
     # Si no encontramos el KPI ni en CSV
-    return {"status": "error", "message": f"No data found for {fn_name}"}
+    return {"result": "error", "message": f"No data found for {fn_name}"}
     
 
 @app.get("/")
