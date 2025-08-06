@@ -18,7 +18,7 @@ EBITDA_CSV = "data/synthetic_ebitda.csv"
 RESERVAS_CSV = "data/synthetic_reservas.csv"
 STOCK_CSV = "data/synthetic_stock.csv"
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR = Path(__file__).resolve().parent / "data"
 WEATHER_CSV = str(DATA_DIR / "daily_weather.csv")
 
 app.add_middleware(
