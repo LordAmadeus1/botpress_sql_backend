@@ -14,7 +14,7 @@ from pathlib import Path
 from datetime import date
 
 VISUALCROSSING_API_KEY = os.getenv("VISUALCROSSING_API_KEY", "")
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 WEATHER_CSV = DATA_DIR / "daily_weather.csv"
 
 # dict citys
