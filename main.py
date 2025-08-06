@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Body
 from db import fn_get_connection
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import os
+from pathlib import Path
+import asyncio
+from ingest.daily import run_daily_weather_ingest
 
 app = FastAPI()
 
@@ -15,6 +18,8 @@ EBITDA_CSV = "data/synthetic_ebitda.csv"
 RESERVAS_CSV = "data/synthetic_reservas.csv"
 STOCK_CSV = "data/synthetic_stock.csv"
 
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+WEATHER_CSV = str(DATA_DIR / "daily_weather.csv")
 
 app.add_middleware(
     CORSMiddleware,
@@ -321,8 +326,23 @@ async def run_query(request: Request):
         return {"result": "success", "data": result}
 
     print(f"[WARN] No hay datos en DWH para {fn_name}, activando fallback CSV")
+      
     return fallback_to_csv(fn_name, params)
     
   except Exception as e:
     print("error al ejecutar", e)
     return {"status": "error", "message": str(e)}
+
+@app.get("/weather")
+def get_weather(city: str, date_str: str):
+    if not os.path.exists(WEATHER_CSV):
+        return {"result": "error", "message": "No weather data"}
+    df = pd.read_csv(WEATHER_CSV)
+    filtered = df[(df["city"] == city) & (df["date"] == date_str)]
+    return {"result": "success", "data": filtered.to_dict(orient="records")}
+
+@app.post("/ingest/daily-weather")
+async def ingest_daily_weather(payload: dict = Body(default={})):
+    venues = payload.get("venues")  # opcional; si no, usa las por defecto
+    res = await run_daily_weather_ingest(venues=venues)
+    return res
