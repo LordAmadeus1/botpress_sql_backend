@@ -308,13 +308,17 @@ async def run_query(request: Request):
     if not fn_info:
         print(f"[WARM] Función {fn_name} no está en el mapa, activando fallback")
         return fallback_to_csv(fn_name, params)
+
+    if "p_week_number" in fn_info["args"] and "p_month_number" in fn_info["args"]:
+        if params.get("p_week_number") is None and params.get("p_month_number") is None:
+            return {"error": "Debes indicar al menos p_week_number o p_month_number."}
         
+    arg_names = [arg for arg in fn_info["args"] if params.get(arg) is not None]
+    args = [params.get(arg) for arg in arg_names]
     
-    arg_names = fn_info["args"]
-    placeholders = ", ".join(["%s"] * len(arg_names))
+    placeholders = ", ".join(["%s"] * len(args))
     query = f"SELECT * FROM dwh.{fn_name}({placeholders});"
     
-    args = [params.get(arg) for arg in arg_names]
     
     print("🟢 Ejecutando:", query)
     print("📦 Con args:", args)
