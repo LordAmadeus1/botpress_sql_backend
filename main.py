@@ -363,7 +363,7 @@ def get_events(
     except ValueError:
         return {"result": "error", "message": "date_str debe tener formato YYYY-MM-DD"}
 
-    if not EVENTS_CSV.exists():
+    if not  os.path.exists(EVENTS_CSV):
         return {"result": "error", "message": "No events data"}
 
     # Leemos como texto para evitar NaNs (nacionales guardadas como vacío)
@@ -393,7 +393,7 @@ def get_motivation(
     except ValueError:
         return {"result": "error", "message": "date_str debe tener formato YYYY-MM-DD"}
 
-    if not MOTIVATION_CSV.exists():
+    if not os.path.exists(MOTIVATION_CSV):
         return {"result": "error", "message": "No motivation data"}
 
     df = pd.read_csv(MOTIVATION_CSV, dtype=str).fillna("")
