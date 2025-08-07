@@ -43,7 +43,7 @@ kpi_function_map = {
         "args": ["p_company_name", "p_year", "p_week_number", "p_month_number"]
     },
     "fn_estimated_profit_by_venue_and_period": {
-        "args": ["p_company_name", "p_venue_name", "p_year", "p_week_number"]
+        "args": ["p_company_name", "p_venue_name", "p_year", "p_week_number", "p_month_number"]
     },
     "fn_estimated_profit_by_venues_and_week": {
         "args": ["p_company_name", "p_year", "p_week_number"]
@@ -83,7 +83,12 @@ kpi_function_map = {
     },
     "fn_weekly_total_income_no_digital": {
         "args": ["p_company_name", "p_week_number", "p_year"]
-    }
+    },
+    "fn_weekly_venues_income_no_digital": {
+        "args": ["p_company_name", "p_week_number", "p_year"]
+    },
+    ".get_departmental_expenses": {
+        "args": ["p_company_name", "p_year", "p_month_number"]
 }
 
 def fallback_to_csv(fn_name, params):
