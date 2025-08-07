@@ -89,7 +89,8 @@ kpi_function_map = {
     },
     ".get_departmental_expenses": {
         "args": ["p_company_name", "p_year", "p_month_number"]
-}
+    }
+    }
 
 def fallback_to_csv(fn_name, params):
     #lee los csv sintéticos
