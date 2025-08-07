@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from fastapi import FastAPI, Request, Query, Body
+from fastapi import FastAPI, Query, Body, Request
 from db import fn_get_connection
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
+import requests
 import os
 from pathlib import Path
 import asyncio
@@ -435,7 +436,7 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
 
   #kpi_data
   # we need last_year_{weekday} as objective
-  response = request.post(f"{url}/query",
+  response = requests.post(f"{url}/query",
         json={
             "function": "fn_weekly_venues_income",
             "params": {
@@ -461,7 +462,7 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
   #previous year as objective
   target_income = venue_data.get(f"last_year_{weekday_label_full}", 0)
 
-  response_att = request.post(f"{url}/query", json={
+  response_att = requests.post(f"{url}/query", json={
         "function": "fn_weekly_attendance_by_venue",
         "params": {
             "p_company_name": company,
