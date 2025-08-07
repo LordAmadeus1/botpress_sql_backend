@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from fastapi import FastAPI, Request, Body
+from fastapi import FastAPI, Request, Query
 from db import fn_get_connection
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import os
 from pathlib import Path
 import asyncio
+from datetime import datetime
 from ingest.daily import run_daily_weather_ingest
 
 app = FastAPI()
@@ -17,6 +18,9 @@ CASHFLOW_CSV = "data/synthetic_cash_flow.csv"
 EBITDA_CSV = "data/synthetic_ebitda.csv"
 RESERVAS_CSV = "data/synthetic_reservas.csv"
 STOCK_CSV = "data/synthetic_stock.csv"
+
+EVENTS_CSV = "data/daily_events.csv"
+MOTIVATION_CSV = "data/motivational_phrases.csv"
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 WEATHER_CSV = str(DATA_DIR / "daily_weather.csv")
@@ -346,3 +350,66 @@ async def ingest_daily_weather(payload: dict = Body(default={})):
     venues = payload.get("venues")  # opcional; si no, usa las por defecto
     res = await run_daily_weather_ingest(venues=venues)
     return res
+
+
+@app.get("/events")
+def get_events(
+    date_str: str = Query(..., description="Fecha YYYY-MM-DD"),
+    city: str | None = Query(None, description="Ciudad (opcional, si se omite devuelve nacionales)")
+):
+    # Validación de fecha
+    try:
+        _ = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return {"result": "error", "message": "date_str debe tener formato YYYY-MM-DD"}
+
+    if not EVENTS_CSV.exists():
+        return {"result": "error", "message": "No events data"}
+
+    # Leemos como texto para evitar NaNs (nacionales guardadas como vacío)
+    df = pd.read_csv(EVENTS_CSV, dtype=str).fillna("")
+    df = df[df["date"] == date_str]
+
+    if city:
+        city_norm = city.strip().upper()
+        # city en CSV puede venir en mayúsculas o vacío para nacionales
+        df = df[df["city"].str.upper() == city_norm]
+    else:
+        # Nacionales: city vacía
+        df = df[df["city"] == ""]
+
+    data = df.to_dict(orient="records")
+    return {"result": "success", "data": data}
+
+@app.get("/motivation")
+def get_motivation(
+    date_str: str = Query(..., description="Fecha YYYY-MM-DD para elegir frase del día"),
+    lang: str = Query("es", description="Idioma (por defecto 'es')"),
+    tone: str = Query("funny", description="Tono (por defecto 'funny')")
+):
+    # Validación de fecha
+    try:
+        target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return {"result": "error", "message": "date_str debe tener formato YYYY-MM-DD"}
+
+    if not MOTIVATION_CSV.exists():
+        return {"result": "error", "message": "No motivation data"}
+
+    df = pd.read_csv(MOTIVATION_CSV, dtype=str).fillna("")
+
+    # Filtro por idioma/tono
+    subset = df[(df["lang"].str.lower() == lang.lower()) & (df["tone"].str.lower() == tone.lower())]
+
+    if subset.empty:
+        # Fallback: ignora filtros si no hay coincidencias
+        subset = df.copy()
+
+    if subset.empty:
+        return {"result": "error", "message": "No hay frases disponibles"}
+
+    # Selección determinista de "frase del día"
+    idx = hash((date_str, lang.lower(), tone.lower())) % len(subset)
+    row = subset.iloc[idx].to_dict()
+
+    return {"result": "success", "data": [row]}
