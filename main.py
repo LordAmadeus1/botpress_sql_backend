@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from fastapi import FastAPI, Request, Query
+from fastapi import FastAPI, Request, Query, Body
 from db import fn_get_connection
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
