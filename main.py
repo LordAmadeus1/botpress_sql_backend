@@ -7,7 +7,7 @@ import pandas as pd
 import os
 from pathlib import Path
 import asyncio
-from datetime import datetime
+from datetime import datetime, date 
 import calendar
 from ingest.daily import run_daily_weather_ingest
 
