@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import asyncio
 from datetime import datetime
+import calendar
 from ingest.daily import run_daily_weather_ingest
 
 app = FastAPI()
@@ -413,3 +414,147 @@ def get_motivation(
     row = subset.iloc[idx].to_dict()
 
     return {"result": "success", "data": [row]}
+
+def get_weekday_label(dt:date):
+  return calendar.day_abbr[dt.weekday()].lower()
+
+def get_weekday_number(dt:date):
+  return dt.weekday()
+
+@app.get("/daily_report")
+def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", tone:str ="funny"):
+
+  company = "PALLAPIZZA"
+  target_date = date.date()
+  year = target_date.year
+  week_number = target_date.isocalendar().week
+  weekday_label = get_weekday_label(target_date)  # 'mon', 'tue', etc.
+  weekday_label_full = target_date.strftime("%A").lower()
+  weekday_number = get_weekday_number(target_date)
+
+
+  #kpi_data
+  # we need last_year_{weekday} as objective
+  response = requests.post(f"{url}/query",
+        json={
+            "function": "fn_weekly_venues_income",
+            "params": {
+                "p_company_name": company,
+                "p_year": year,
+                "p_week_number": week_number
+            }
+        })
+
+  if response.status_code != 200:
+        return {"error": "API call failed", "details": response.text}
+
+  try:
+    kpi_data = response.json()["data"]
+  except json.JSONDecodeError as e:
+    return {"error": "Invalid JSON response", "details": str(e)}
+
+  #search by venue
+  venue_data = next((item for item in kpi_data if item["venue_name"].upper() == venue_name.upper()), None)
+  if venue_data is None:
+    return {"error": "Venue not found"}
+
+  #previous year as objective
+  target_income = venue_data.get(f"last_year_{weekday_label_full}", 0)
+
+  response_att = requests.post(f"{url}/query", json={
+        "function": "fn_weekly_attendance_by_venue",
+        "params": {
+            "p_company_name": company,
+            "p_year": year,
+            "p_week_number": week_number
+        }
+    })
+  
+  attendance_data = response_att.json().get("data", [])
+  attendance_row = next((row for row in attendance_data if row["venue_name"].upper() == venue_name.upper()), None) 
+
+  if attendance_row:
+        attendance_last = attendance_row.get(f"{weekday_label}_prev", 0)
+        current_attendance = int(attendance_last * 1.1)
+        if attendance_last > 0:
+            attendance_variation = ((current_attendance - attendance_last) / attendance_last) * 100
+        else:
+            attendance_variation = 0.0
+  else:
+      attendance_last = 0
+      current_attendance = 0
+      attendance_variation = 0
+
+  reservas_df = pd.read_csv(RESERVAS_CSV)
+  reservas_filtered = reservas_df[
+      (reservas_df["p_company_name"] == company) &
+      (reservas_df["p_venue_name"] == venue_name) &
+      (reservas_df["p_year"] == year) &
+      (reservas_df["p_week_number"] == week_number) &
+      (reservas_df["weekday"] == weekday_number)
+  ]
+  if not reservas_filtered.empty:
+      num_reservas = int(reservas_filtered.iloc[0]["reservations"])
+  else: num_reservas = 0
+
+  # 2. STOCK
+  stock_df = pd.read_csv(STOCK_CSV)
+  stock_filtered = stock_df[
+      (stock_df["p_company_name"] == company) &
+      (stock_df["p_venue_name"] == venue_name) &
+      (stock_df["p_year"] == year) &
+      (stock_df["p_week_number"] == week_number)
+  ].copy()
+
+  stock_filtered["ratio"] = stock_filtered["stock"] / stock_filtered["capacity"]
+  productos_bajo_stock = stock_filtered[stock_filtered["ratio"] < 0.3]["product_name"].tolist()
+  productos_medio_stock = stock_filtered[
+      (stock_filtered["ratio"] >= 0.3) & (stock_filtered["ratio"] < 0.6)
+  ]["product_name"].tolist()
+
+  #motivation
+  if not os.path.exists(MOTIVATION_CSV):
+      phrase= "¡Ánimo! Hoy es un gran día para intentarlo."
+
+  else:
+    df = pd.read_csv(MOTIVATION_CSV, dtype=str).fillna("")
+
+    filtered = df[
+        (df["lang"].str.lower() == lang.lower()) &
+        (df["tone"].str.lower() == tone.lower())
+    ]
+
+    if filtered.empty:
+        filtered = df.copy()
+    phrase= filtered.iloc[hash((str(target_date), lang.lower(), tone.lower())) % len(filtered)]["text"]
+
+  #events
+  if not os.path.exists(EVENTS_CSV):
+        events, hay_futbol= [], False
+
+  else:
+    df = pd.read_csv(EVENTS_CSV, dtype=str).fillna("")
+    df_today = df[(df["date"] == target_date.isoformat()) & (df["city"].str.upper() == venue_name.upper())]
+    events = df_today["title"].tolist()
+    hay_futbol = any(df_today["has_football"].astype(str) == "1")
+
+  return {
+        "result": "success",
+        "kpi_data": {
+            "objective": target_income,
+            "prediction": None,  # pendiente
+            "attendance_last": attendance_last,
+            "attendance_variation": attendance_variation,
+            "num_reservas": num_reservas
+        },
+        "synthetic_data": {
+            "productos_bajo_stock": productos_bajo_stock,
+            "productos_medio_stock": productos_medio_stock,
+            "fechas_importantes": events,
+            "clima": "sol",  # fijo por ahora
+            "temperatura": 33,
+            "frase_clima": "¡la terraza se va a llenar seguro!",
+            "frase_motivacional": phrase,
+            "hay_futbol": hay_futbol
+        }
+    }
