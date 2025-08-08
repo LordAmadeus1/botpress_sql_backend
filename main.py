@@ -350,7 +350,7 @@ def get_weather(city: str, date_str: str):
     if not os.path.exists(WEATHER_CSV):
         return {"result": "error", "message": "No weather data"}
     df = pd.read_csv(WEATHER_CSV)
-    filtered = df[(df["city"] == city) & (df["date"] == date_str)]
+    filtered = df[df["city"].str.contains(city, case=False, na=False) & (df["date"] == date_str)]
     return {"result": "success", "data": filtered.to_dict(orient="records")}
 
 @app.post("/ingest/daily-weather")
