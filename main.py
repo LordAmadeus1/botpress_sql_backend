@@ -544,61 +544,60 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
     events = df_today["title"].tolist()
     hay_futbol = any(df_today["has_football"].astype(str) == "1")
 
-  #weather
   weather_url = f"{url}/daily_weather.csv"
   weather_resp = requests.get(weather_url, params={
-    "city": venue_name,
-    "date": target_date.isoformat()
+      "city": venue_name,
+      "date": target_date.isoformat()
   })
 
- if weather_resp.status_code == 200:
-    try:
-        weather_data = weather_resp.json()
+  if weather_resp.status_code == 200:
+      try:
+          weather_data = weather_resp.json()
 
-        temperatura = weather_data.get("temp")
-        clima = weather_data.get("conditions", "").lower()
-        icono = weather_data.get("icon", "")
+          temperatura = weather_data.get("temp")
+          clima = weather_data.get("conditions", "").lower()
+          icono = weather_data.get("icon", "")
 
-        # Crear frase sobre el clima
-        if clima:
-            if "rain" in clima or "lluvia" in clima:
-                frase_clima = "Parece que lloverá ☔, tenlo en cuenta para las reservas."
-            elif "sun" in clima or "despejado" in clima:
-                frase_clima = "¡Día soleado! La terraza seguro que se llena. ☀️"
-            elif "cloud" in clima or "nublado" in clima:
-                frase_clima = "Día nublado, perfecto para comer algo caliente."
-            else:
-                frase_clima = f"El clima de hoy es {clima}."
-        else:
-            frase_clima = "No tengo información del clima para hoy."
+          # Crear frase sobre el clima
+          if clima:
+              if "rain" in clima or "lluvia" in clima:
+                  frase_clima = "Parece que lloverá ☔, tenlo en cuenta para las reservas."
+              elif "sun" in clima or "despejado" in clima:
+                  frase_clima = "¡Día soleado! La terraza seguro que se llena. ☀️"
+              elif "cloud" in clima or "nublado" in clima:
+                  frase_clima = "Día nublado, perfecto para comer algo caliente."
+              else:
+                  frase_clima = f"El clima de hoy es {clima}."
+          else:
+              frase_clima = "No tengo información del clima para hoy."
 
-    except Exception as e:
-        clima = None
-        temperatura = None
-        frase_clima = f"Error al procesar clima: {e}"
- else:
-    clima = None
-    temperatura = None
-    frase_clima = "No se pudo obtener el clima."
+      except Exception as e:
+          clima = None
+          temperatura = None
+          frase_clima = f"Error al procesar clima: {e}"
+  else:
+      clima = None
+      temperatura = None
+      frase_clima = "No se pudo obtener el clima."
 
- venues_growth = {
-        'BILBAO': {'mu': 0.7221, 'sigma': 0.6485, 'n': 25},
-        'PAMPLONA': {'mu': 1.2594, 'sigma': 0.6485, 'n': 25},
-        'VITORIA': {'mu': 0.5898, 'sigma': 0.6485, 'n': 1},
-        'SAN SEBASTIAN': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
-        'ZARAGOZA': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
-        'BURGOS': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
-    }
+  venues_growth = {
+      'BILBAO': {'mu': 0.7221, 'sigma': 0.6485, 'n': 25},
+      'PAMPLONA': {'mu': 1.2594, 'sigma': 0.6485, 'n': 25},
+      'VITORIA': {'mu': 0.5898, 'sigma': 0.6485, 'n': 1},
+      'SAN SEBASTIAN': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
+      'ZARAGOZA': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
+      'BURGOS': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
+  }
     
-    # Obtener mu del venue
- mu_local = venues_growth.get(venue_name.upper(), {}).get("mu", None)
+  # Obtener mu del venue
+  mu_local = venues_growth.get(venue_name.upper(), {}).get("mu", None)
 
- if mu_local is not None:
-    prediction = round(mu_local * target_income, 2)
-    prediction_var = round(((prediction - target_income) / target_income) * 100, 2) if target_income > 0 else None
- else:
-    prediction = None
-    prediction_var = None
+  if mu_local is not None:
+      prediction = round(mu_local * target_income, 2)
+      prediction_var = round(((prediction - target_income) / target_income) * 100, 2) if target_income > 0 else None
+  else:
+      prediction = None
+      prediction_var = None
     
  return {
         "result": "success",
