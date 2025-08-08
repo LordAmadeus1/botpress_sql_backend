@@ -1,4 +1,9 @@
 city,date,title,category,source,details,has_football
+,2025-08-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-08-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-08-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-08-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-08-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 VITORIA,2025-08-05,La Blanca,festivo,static,"{""scope"": ""local""}",0
 ,2025-08-15,Asunción de la Virgen,festivo,static,"{""scope"": ""nacional""}",0
 ,2025-08-17,Jornada de LaLiga,futbol,static,{},1
@@ -14,12 +19,19 @@ BILBAO,2025-08-24,Aste Nagusia (Domingo de inicio),festivo,static,"{""scope"": "
 BURGOS,2025-08-24,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2025-08-24,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2025-08-24,Jornada de LaLiga,futbol,static,{},1
+,2025-08-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2025-08-31,Jornada de LaLiga,futbol,static,{},1
+,2025-08-31,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2025-08-31,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2025-08-31,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2025-08-31,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2025-08-31,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2025-08-31,Jornada de LaLiga,futbol,static,{},1
+,2025-09-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-09-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-09-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-09-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-09-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2025-09-14,Jornada de LaLiga,futbol,static,{},1
 PAMPLONA,2025-09-14,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2025-09-14,Jornada de LaLiga,futbol,static,{},1
@@ -45,7 +57,13 @@ BILBAO,2025-09-28,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2025-09-28,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2025-09-28,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2025-09-28,Jornada de LaLiga,futbol,static,{},1
+,2025-09-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-10-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-10-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-10-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-10-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2025-10-05,Jornada de LaLiga,futbol,static,{},1
+,2025-10-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2025-10-05,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2025-10-05,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2025-10-05,Jornada de LaLiga,futbol,static,{},1
@@ -66,13 +84,20 @@ BILBAO,2025-10-26,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2025-10-26,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2025-10-26,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2025-10-26,Jornada de LaLiga,futbol,static,{},1
+,2025-10-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-10-31,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2025-11-01,Todos los Santos,festivo,static,"{""scope"": ""nacional""}",0
+,2025-11-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2025-11-02,Jornada de LaLiga,futbol,static,{},1
+,2025-11-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2025-11-02,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2025-11-02,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2025-11-02,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2025-11-02,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2025-11-02,Jornada de LaLiga,futbol,static,{},1
+,2025-11-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-11-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-11-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2025-11-09,Jornada de LaLiga,futbol,static,{},1
 PAMPLONA,2025-11-09,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2025-11-09,Jornada de LaLiga,futbol,static,{},1
@@ -87,11 +112,17 @@ BURGOS,2025-11-23,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2025-11-23,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2025-11-23,Jornada de LaLiga,futbol,static,{},1
 ,2025-11-30,Jornada de LaLiga,futbol,static,{},1
+,2025-11-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2025-11-30,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2025-11-30,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2025-11-30,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2025-11-30,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2025-11-30,Jornada de LaLiga,futbol,static,{},1
+,2025-12-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-12-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-12-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-12-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-12-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2025-12-06,Día de la Constitución,festivo,static,"{""scope"": ""nacional""}",0
 ,2025-12-07,Jornada de LaLiga,futbol,static,{},1
 PAMPLONA,2025-12-07,Jornada de LaLiga,futbol,static,{},1
@@ -114,12 +145,19 @@ BURGOS,2025-12-21,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2025-12-21,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2025-12-21,Jornada de LaLiga,futbol,static,{},1
 ,2025-12-25,Navidad,festivo,static,"{""scope"": ""nacional""}",0
+,2025-12-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2025-12-31,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-01-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-01-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-01-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-01-04,Jornada de LaLiga,futbol,static,{},1
+,2026-01-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2026-01-04,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-01-04,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-01-04,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-01-04,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-01-04,Jornada de LaLiga,futbol,static,{},1
+,2026-01-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-01-11,Jornada de LaLiga,futbol,static,{},1
 PAMPLONA,2026-01-11,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-01-11,Jornada de LaLiga,futbol,static,{},1
@@ -139,12 +177,19 @@ BILBAO,2026-01-25,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-01-25,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-01-25,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-01-25,Jornada de LaLiga,futbol,static,{},1
+,2026-01-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-01-31,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-02-01,Jornada de LaLiga,futbol,static,{},1
+,2026-02-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2026-02-01,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-02-01,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-02-01,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-02-01,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-02-01,Jornada de LaLiga,futbol,static,{},1
+,2026-02-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-02-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-02-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-02-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-02-08,Jornada de LaLiga,futbol,static,{},1
 PAMPLONA,2026-02-08,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-02-08,Jornada de LaLiga,futbol,static,{},1
@@ -164,12 +209,18 @@ BILBAO,2026-02-22,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-02-22,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-02-22,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-02-22,Jornada de LaLiga,futbol,static,{},1
+,2026-02-28,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-03-01,Jornada de LaLiga,futbol,static,{},1
+,2026-03-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2026-03-01,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-03-01,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-03-01,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-03-01,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-03-01,Jornada de LaLiga,futbol,static,{},1
+,2026-03-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-03-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-03-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-03-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-03-08,Jornada de LaLiga,futbol,static,{},1
 PAMPLONA,2026-03-08,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-03-08,Jornada de LaLiga,futbol,static,{},1
@@ -189,7 +240,14 @@ BILBAO,2026-03-22,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-03-22,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-03-22,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-03-22,Jornada de LaLiga,futbol,static,{},1
+,2026-03-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-03-31,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-04-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-04-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-04-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-04-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-04-05,Jornada de LaLiga,futbol,static,{},1
+,2026-04-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2026-04-05,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-04-05,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-04-05,Jornada de LaLiga,futbol,static,{},1
@@ -214,12 +272,18 @@ BILBAO,2026-04-22,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-04-22,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-04-22,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-04-22,Jornada de LaLiga,futbol,static,{},1
+,2026-04-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-05-01,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-05-02,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-05-03,Jornada de LaLiga,futbol,static,{},1
+,2026-05-03,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",1
 PAMPLONA,2026-05-03,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-05-03,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-05-03,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-05-03,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-05-03,Jornada de LaLiga,futbol,static,{},1
+,2026-05-04,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-05-05,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
 ,2026-05-10,Jornada de LaLiga,futbol,static,{},1
 PAMPLONA,2026-05-10,Jornada de LaLiga,futbol,static,{},1
 BILBAO,2026-05-10,Jornada de LaLiga,futbol,static,{},1
@@ -245,3 +309,5 @@ BILBAO,2026-05-24,Jornada de LaLiga,futbol,static,{},1
 BURGOS,2026-05-24,Jornada de LaLiga,futbol,static,{},1
 VITORIA,2026-05-24,Jornada de LaLiga,futbol,static,{},1
 ZARAGOZA,2026-05-24,Jornada de LaLiga,futbol,static,{},1
+,2026-05-30,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
+,2026-05-31,Pago de Hacienda (mensual),fiscal,static,"{""periodicidad"": ""mensual""}",0
