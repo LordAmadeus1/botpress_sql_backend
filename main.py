@@ -545,7 +545,7 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
     hay_futbol = any(df_today["has_football"].astype(str) == "1")
 
   #weather
-  weather_url = f"{url}/weather"
+  weather_url = f"{url}/daily_weather.csv"
   weather_resp = requests.get(weather_url, params={
     "city": venue_name,
     "date": target_date.isoformat()
