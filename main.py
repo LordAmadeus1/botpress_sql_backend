@@ -24,7 +24,7 @@ STOCK_CSV = "data/synthetic_stock.csv"
 EVENTS_CSV = "data/daily_events.csv"
 MOTIVATION_CSV = "data/motivational_phrases.csv"
 
-DATA_DIR = Path(__file__).resolve().parent / "data"
+DATA_DIR = Path("/weather")
 WEATHER_CSV = str(DATA_DIR / "daily_weather.csv")
 
 app.add_middleware(
