@@ -598,25 +598,25 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
   else:
       prediction = None
       prediction_var = None
-    
- return {
-        "result": "success",
-        "kpi_data": {
-            "objective": target_income,
-            "prediction": prediction,
-            "prediction_var" : prediction_var,
-            "attendance_last": attendance_last,
-            "attendance_variation": attendance_variation,
-            "num_reservas": num_reservas
-        },
-        "synthetic_data": {
-            "productos_bajo_stock": productos_bajo_stock,
-            "productos_medio_stock": productos_medio_stock,
-            "fechas_importantes": events,
-            "clima": clima,  # fijo por ahora
-            "temperatura": temperatura,
-            "frase_clima": frase_clima,
-            "frase_motivacional": phrase,
-            "hay_futbol": hay_futbol
-        }
-    }
+
+  return {
+      "result": "success",
+      "kpi_data": {
+          "objective": target_income,
+          "prediction": prediction,
+          "prediction_var": prediction_var,
+          "attendance_last": attendance_last,
+          "attendance_variation": attendance_variation,
+          "num_reservas": num_reservas
+      },
+      "synthetic_data": {
+          "productos_bajo_stock": productos_bajo_stock,
+          "productos_medio_stock": productos_medio_stock,
+          "fechas_importantes": events,
+          "clima": clima,
+          "temperatura": temperatura,
+          "frase_clima": frase_clima,
+          "frase_motivacional": phrase,
+          "hay_futbol": hay_futbol
+      }
+  }
