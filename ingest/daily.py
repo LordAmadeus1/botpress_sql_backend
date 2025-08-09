@@ -28,10 +28,10 @@ async def run_daily_weather_ingest(venues: list[str] | None = None):
     ok, errors = 0, []
     for res in results:
         if isinstance(res, Exception):
-            print(f"❌ [ingest] Error en fetch de {city}:", res)
+            print(f"❌ [ingest] Error en fetch de: {cities}", res)
             errors.append(str(res))
         else:
-            print(f"📥 [ingest] {len(res)} filas recibidas para {city}")
+            print(f"📥 [ingest] {len(res)} filas recibidas para {cities}")
             for row in res:
                 await upsert_daily_weather_csv_async(row)
             ok += len(res)
