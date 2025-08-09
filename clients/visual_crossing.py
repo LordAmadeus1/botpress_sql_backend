@@ -36,6 +36,7 @@ WEATHER_COLUMNS = [
 ]
 
 async def fetch_weather_for_city(city_alias: str):
+     print(f"🌐 [fetch_weather_for_city] Iniciando fetch para: {city_alias}")
     """Llama a Visual Crossing para city_alias (ej. 'Vitoria-Gasteiz') para 'today'."""
     if not VISUALCROSSING_API_KEY:
         raise RuntimeError("VISUALCROSSING_API_KEY no configurada")
@@ -48,10 +49,12 @@ async def fetch_weather_for_city(city_alias: str):
         r.raise_for_status()
         payload = r.json()
 
+    days = payload.get("days", [])
+    print(f"🌦️ [fetch_weather_for_city] {len(days)} días recibidos para {city_alias}")
     rows= []
     curr = payload.get("currentConditions", {}) or {}
 
-    for day in payload.get("days", []):
+    for day in days:
         # Build the row in CSV (con fallback a current)
         row = {
             "city": payload.get("address") or payload.get("resolvedAddress") or city_alias,
@@ -70,16 +73,17 @@ async def fetch_weather_for_city(city_alias: str):
         }
         rows.append(row)
         
+     print(f"✅ [fetch_weather_for_city] Construidos {len(rows)} rows para {city_alias}")
     return rows
 
 async def upsert_daily_weather_csv_async(row: dict):
-    """
-    Versión asíncrona de upsert_daily_weather_csv usando asyncio.to_thread.
-    """
+    print(f"💾 [upsert_async] Escribiendo row: {row['city']} {row['date']}")
     await asyncio.to_thread(upsert_daily_weather_csv, row)
+    print("✅ [upsert_async] Completado")
 
 def upsert_daily_weather_csv(row: dict):
     """Upsert por (city, date) en data/synthetic_daily_weather.csv"""
+    print("💾 [upsert] Antes de leer CSV:", WEATHER_CSV)
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     if WEATHER_CSV.exists():
@@ -97,3 +101,4 @@ def upsert_daily_weather_csv(row: dict):
 
     df = pd.concat([df, pd.DataFrame([row])[WEATHER_COLUMNS]], ignore_index=True)
     df.to_csv(WEATHER_CSV, index=False)
+    print(f"✅ [upsert] Escrito row: {row['city']} {row['date']} — total filas ahora: {len(df)}")
