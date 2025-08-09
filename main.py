@@ -309,8 +309,16 @@ def fallback_to_csv(fn_name, params):
 def read_root():
     return {"message": "Backend connected"}
 
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f"📥 Incoming request: {request.method} {request.url}")
+    response = await call_next(request)
+    return response
+
 @app.post("/query")
 async def run_query(request: Request):
+
+  print("Hola...")  
   data = await request.json()
   print("data: ", data)
   fn_name = data.get("function")
