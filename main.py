@@ -131,7 +131,7 @@ async def handle_weather_forecast(params: dict):
             day_data = resp.get("data",[])
 
         all_data.extend(day_data)
-        curent += pd.Timedelta(days=1)
+        current += pd.Timedelta(days=1)
         
     return {"result": "success", "data": all_data}
 
