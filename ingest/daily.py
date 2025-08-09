@@ -28,7 +28,7 @@ async def run_daily_weather_ingest(venues: list[str] | None = None):
             errors.append(str(res))
         else:
             for row in res:
-                upsert_daily_weather_csv(row)
+                await upsert_daily_weather_csv_async(row)
             ok += len(res)
 
     return {"result": "success", "weather_upserted": ok, "errors": errors}
