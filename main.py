@@ -603,32 +603,34 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
     except Exception as e:
         temperatura = clima = icono = None
         frase_clima = f"Error al procesar clima: {e}"
-        
-  venues_growth = {
-      'BILBAO': {'mu': 0.7221, 'sigma': 0.6485, 'n': 25},
-      'PAMPLONA': {'mu': 1.2594, 'sigma': 0.6485, 'n': 25},
-      'VITORIA': {'mu': 0.5898, 'sigma': 0.6485, 'n': 1},
-      'SAN SEBASTIAN': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
-      'ZARAGOZA': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
-      'BURGOS': {'mu': 0.9724, 'sigma': 0.8053, 'n': 0},
-  }
-    
-  # Obtener mu del venue
-  mu_local = venues_growth.get(venue_name.upper(), {}).get("mu", None)
 
-  if mu_local is not None:
-      prediction = round(mu_local * target_income, 2)
-      prediction_var = round(((prediction - target_income) / target_income) * 100, 2) if target_income > 0 else None
+  #cash_flow  
+  cashflow_df = pd.read_csv(CASHFLOW_CSV)
+  daily_income_col = f"{weekday_label_full}_income_predicted"
+
+  pred_row = cashflow_df[
+    (cashflow_df["p_venue_name"].str.upper() == venue_name.upper()) &
+    (cashflow_df["p_year"] == year) &
+    (cashflow_df["p_week_number"] == week_number)
+  ]
+
+  if not pred_row.empty and daily_income_col in cashflow_df.columns:
+    daily_income_predicted = float(pred_row.iloc[0][daily_income_col])
   else:
-      prediction = None
-      prediction_var = None
+    daily_income_predicted = None
+
+
+  if daily_income_predicted is not None and target_income > 0:
+    daily_income_var = round(((daily_income_predicted - target_income) / target_income) * 100, 2)
+  else:
+    daily_income_var = None
 
   return {
       "result": "success",
       "kpi_data": {
           "objective": target_income,
-          "prediction": prediction,
-          "prediction_var": prediction_var,
+          "prediction": daily_income_predicted,
+          "prediction_var": daily_income_var,
           "attendance_last": attendance_last,
           "attendance_variation": attendance_variation,
           "num_reservas": num_reservas
