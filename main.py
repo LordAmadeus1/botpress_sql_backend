@@ -10,6 +10,7 @@ from pathlib import Path
 import asyncio
 from datetime import datetime, date 
 import calendar
+import time
 from ingest.daily import run_daily_weather_ingest
 
 app = FastAPI()
@@ -287,8 +288,10 @@ def fallback_to_csv(fn_name, params):
         ]
 
         if filtered.empty:
-            BASE = "https://botpress-sql-backend.onrender.com"
+            BASE = "https://botpress-sql-backend.onrender.com/ingest/daily-weather"
             requests.post(BASE, json={"venues": [city.upper()]})
+
+            time.sleep(5)
 
             df = pd.read_csv(WEATHER_CSV)
             df["date"] = pd.to_datetime(df["date"]).dt.date
