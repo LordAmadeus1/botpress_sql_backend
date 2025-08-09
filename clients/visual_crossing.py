@@ -47,27 +47,29 @@ async def fetch_weather_for_city(city_alias: str):
         r.raise_for_status()
         payload = r.json()
 
-    # Extract days and current conditions
-    day = (payload.get("days") or [{}])[0]
+    rows= []
     curr = payload.get("currentConditions", {}) or {}
 
-    # Build the row in CSV (con fallback a current)
-    row = {
-        "city": payload.get("address") or payload.get("resolvedAddress") or city_alias,
-        "date": day.get("datetime") or date.today().isoformat(),
-        "tempmax": day.get("tempmax"),
-        "tempmin": day.get("tempmin"),
-        "temp": day.get("temp") if day.get("temp") is not None else curr.get("temp"),
-        "feelslikemax": day.get("feelslikemax"),
-        "feelslikemin": day.get("feelslikemin"),
-        "feelslike": day.get("feelslike") if day.get("feelslike") is not None else curr.get("feelslike"),
-        "precip": day.get("precip"),
-        "precipprob": day.get("precipprob"),
-        "conditions": (curr.get("conditions") or day.get("conditions")),
-        "icon": (curr.get("icon") or day.get("icon")),
-        "source": "visualcrossing",
-    }
-    return row
+    for day in payload.get("days", []):
+        # Build the row in CSV (con fallback a current)
+        row = {
+            "city": payload.get("address") or payload.get("resolvedAddress") or city_alias,
+            "date": day.get("datetime") or date.today().isoformat(),
+            "tempmax": day.get("tempmax"),
+            "tempmin": day.get("tempmin"),
+            "temp": day.get("temp") if day.get("temp") is not None else curr.get("temp"),
+            "feelslikemax": day.get("feelslikemax"),
+            "feelslikemin": day.get("feelslikemin"),
+            "feelslike": day.get("feelslike") if day.get("feelslike") is not None else curr.get("feelslike"),
+            "precip": day.get("precip"),
+            "precipprob": day.get("precipprob"),
+            "conditions": (curr.get("conditions") or day.get("conditions")),
+            "icon": (curr.get("icon") or day.get("icon")),
+            "source": "visualcrossing",
+        }
+        rows.append(row)
+        
+    return rows
 
 def upsert_daily_weather_csv(row: dict):
     """Upsert por (city, date) en data/synthetic_daily_weather.csv"""
