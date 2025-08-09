@@ -19,7 +19,7 @@ async def run_daily_weather_ingest(venues: list[str] | None = None):
     print("🚀 [ingest] Empezando ingest para venues:", venues)
     # Concult official names in Visual Crossing
     cities = [CITY_ALIAS.get(v, v) for v in venues]
-    rint("🔄 [ingest] Ciudades mapeadas a Visual Crossing:", cities)
+    print("🔄 [ingest] Ciudades mapeadas a Visual Crossing:", cities)
 
     # current fetch
     tasks = [fetch_weather_for_city(c) for c in cities]
