@@ -94,39 +94,27 @@ kpi_function_map = {
 
 def fallback_to_csv(fn_name, params):
     #lee los csv sintéticos
-    if fn_name == "cash_flow_synthetic":
+    if fn_name == "cash_flow_synthetic_by_week":
         df = pd.read_csv(CASHFLOW_CSV)
         filtered = df[
-            (df["p_company_name"] == params.get("p_company_name")) &
-            (df["p_year"] == params.get("p_year"))
-        ]
-        return {"result": "success", "data": filtered.to_dict(orient="records")}
-
-    elif fn_name == "cash_flow_synthetic_by_week":
-        df = pd.read_csv(CASHFLOW_CSV)
-        filtered = df[
-            (df["p_company_name"] == params.get("p_company_name")) &
             (df["p_year"] == params.get("p_year")) &
             (df["p_week_number"] == params.get("p_week_number"))
         ]
-        return {"result": "success", "data": filtered.to_dict(orient="records")}
+        cols_income = [c for c in df.columns if c.endswith("_income_predicted")]
+        result_df = filtered[["p_venue_name", "p_year", "p_week_number"] + cols_income]
+        
+        return {"result": "success", "data": result_df.to_dict(orient="records")}
 
     elif fn_name == "cash_flow_synthetic_by_venue":
         df = pd.read_csv(CASHFLOW_CSV)
         filtered = df[
-            (df["p_company_name"] == params.get("p_company_name")) &
+            (df["p_venue_name"] == params.get("p_venue_name")) &
             (df["p_year"] == params.get("p_year")) &
-            (df["p_venue_name"] == params.get("p_venue_name"))
+            (df["p_week_number"] == params.get("p_week_number"))
         ]
-        return {"result": "success", "data": filtered.to_dict(orient="records")}
-
-    elif fn_name == "cogs_synthetic":
-        df = pd.read_csv(SALES_CSV)
-        filtered = df[
-            (df["p_company_name"] == params.get("p_company_name")) &
-            (df["p_year"] == params.get("p_year"))
-        ]
-        return {"result": "success", "data": filtered.to_dict(orient="records")}
+        cols_income = [c for c in df.columns if c.endswith("_income_predicted")]
+        result_df = filtered[["p_venue_name", "p_year", "p_week_number"] + cols_income]
+        return {"result": "success", "data": result_df.to_dict(orient="records")}
 
     elif fn_name == "cogs_synthetic_by_venue":
         df = pd.read_csv(SALES_CSV)
@@ -145,14 +133,7 @@ def fallback_to_csv(fn_name, params):
             (df["p_week_number"] == params.get("p_week_number"))
         ]
         return {"result": "success", "data": filtered.to_dict(orient="records")}
-    
-    elif fn_name == "ebitda_synthetic":
-        df = pd.read_csv(EBITDA_CSV)
-        filtered = df[
-            (df["p_company_name"] == params.get("p_company_name")) &
-            (df["p_year"] == params.get("p_year"))
-        ]
-        return {"result": "success", "data": filtered.to_dict(orient="records")}
+
 
     elif fn_name == "ebitda_synthetic_by_month":
         df = pd.read_csv(EBITDA_CSV)
@@ -286,6 +267,37 @@ def fallback_to_csv(fn_name, params):
                 (filtered["p_week_number"] <= params.get("p_week_end"))
             ]
         return {"result": "success", "data": filtered.to_dict(orient="records")}
+
+    elif fn_name == "weather_forecast":
+        df = pd.read_csv(WEATHER_CSV)
+        df["date"] = pd.to_datetime(df["date"])
+        
+        city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
+        date_str = params.get("day") or params.get("p_date")
+
+        if not city or not date_str:
+            return {"error": "Parámetros p_city/p_venue_name y p_date/day son requeridos"}
+
+        start_date = pd.to_datetime(date_str).date()
+        end_date = start_date + pd.Timedelta(days=3)
+    
+        filtered = df[
+            df["city"].str.contains(city, case=False, na=False) &
+            (df["date"].between(start_date, end_date))
+        ]
+
+        if filtered.empty:
+            BASE = "https://botpress-sql-backend.onrender.com"
+            requests.post(BASE, json={"venues": [city.upper()]})
+
+            df = pd.read_csv(WEATHER_CSV)
+            df["date"] = pd.to_datetime(df["date"]).dt.date
+            filtered = df[
+                df["city"].str.contains(city, case=False, na=False) &
+                (df["date"].between(start_date, end_date))
+            ]
+            
+        return {"result": "success", "data": filtered.to_dict(orient="records")}
     
     # Si no encontramos el KPI ni en CSV
     return {"result": "error", "message": f"No data found for {fn_name}"}
@@ -350,7 +362,7 @@ def get_weather(city: str, date_str: str):
     if not os.path.exists(WEATHER_CSV):
         return {"result": "error", "message": "No weather data"}
     df = pd.read_csv(WEATHER_CSV)
-    filtered = df[df["city"].str.contains(city, case=False, na=False) & (df["date"] == date_str)]
+    filtered = df[df["city"].str.contains(city, case=False, na=False) & (df["date"].astype(str) == str(date_str).strip())]
     return {"result": "success", "data": filtered.to_dict(orient="records")}
 
 @app.post("/ingest/daily-weather")
@@ -432,12 +444,13 @@ def get_weekday_number(dt:date):
 def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", tone:str ="funny"):
 
   company = "PALLAPIZZA"
-  target_date = date.date()
+  target_date = pd.to_datetime(date).date()
   year = target_date.year
   week_number = target_date.isocalendar().week
   weekday_label = get_weekday_label(target_date)  # 'mon', 'tue', etc.
   weekday_label_full = target_date.strftime("%A").lower()
   weekday_number = get_weekday_number(target_date)
+  date_str = target_date.isoformat()
 
   #kpi_data
   # we need last_year_{weekday} as objective
@@ -544,42 +557,53 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
     events = df_today["title"].tolist()
     hay_futbol = any(df_today["has_football"].astype(str) == "1")
 
+
   weather_url = f"{url}/daily_weather.csv"
-  weather_resp = requests.get(weather_url, params={
-      "city": venue_name,
-      "date": target_date.isoformat()
-  })
+  df_weather = pd.read_csv(WEATHER_CSV)
+  df_weather["date"] = pd.to_datetime(df_weather["date"]).dt.date
 
-  if weather_resp.status_code == 200:
-      try:
-          weather_data = weather_resp.json()
+  target_date = pd.to_datetime(date).date()
+  date_str = target_date.isoformat()
 
-          temperatura = weather_data.get("temp")
-          clima = weather_data.get("conditions", "").lower()
-          icono = weather_data.get("icon", "")
+  # Intentar obtener de CSV local
+  weather_row = df_weather[
+    df_weather["city"].str.contains(venue_name, case=False, na=False) &
+    (df_weather["date"] == target_date)
+  ]
 
-          # Crear frase sobre el clima
-          if clima:
-              if "rain" in clima or "lluvia" in clima:
-                  frase_clima = "Parece que lloverá ☔, tenlo en cuenta para las reservas."
-              elif "sun" in clima or "despejado" in clima:
-                  frase_clima = "¡Día soleado! La terraza seguro que se llena. ☀️"
-              elif "cloud" in clima or "nublado" in clima:
-                  frase_clima = "Día nublado, perfecto para comer algo caliente."
-              else:
-                  frase_clima = f"El clima de hoy es {clima}."
-          else:
-              frase_clima = "No tengo información del clima para hoy."
+  def generar_frase_clima(clima):
+    if clima:
+        if "rain" in clima or "lluvia" in clima:
+            return "Parece que lloverá ☔, tenlo en cuenta para las reservas."
+        elif "sun" in clima or "despejado" in clima:
+            return "¡Día soleado! La terraza seguro que se llena. ☀️"
+        elif "cloud" in clima or "nublado" in clima:
+            return "Día nublado, perfecto para comer algo caliente."
+        else:
+            return f"El clima de hoy es {clima}."
+    return "No tengo información del clima para hoy."
 
-      except Exception as e:
-          clima = None
-          temperatura = None
-          frase_clima = f"Error al procesar clima: {e}"
+  if not weather_row.empty:
+    temperatura = weather_row.iloc[0]["temp"]
+    clima = str(weather_row.iloc[0]["conditions"]).lower()
+    icono = weather_row.iloc[0]["icon"]
+    frase_clima = generar_frase_clima(clima)
   else:
-      clima = None
-      temperatura = None
-      frase_clima = "No se pudo obtener el clima."
-
+    try:
+        weather_resp = requests.get(weather_url, params={"city": venue_name, "date": date_str})
+        if weather_resp.status_code == 200:
+            weather_data = weather_resp.json()
+            temperatura = weather_data.get("temp")
+            clima = weather_data.get("conditions", "").lower()
+            icono = weather_data.get("icon", "")
+            frase_clima = generar_frase_clima(clima)
+        else:
+            temperatura = clima = icono = None
+            frase_clima = "No se pudo obtener el clima."
+    except Exception as e:
+        temperatura = clima = icono = None
+        frase_clima = f"Error al procesar clima: {e}"
+        
   venues_growth = {
       'BILBAO': {'mu': 0.7221, 'sigma': 0.6485, 'n': 25},
       'PAMPLONA': {'mu': 1.2594, 'sigma': 0.6485, 'n': 25},
