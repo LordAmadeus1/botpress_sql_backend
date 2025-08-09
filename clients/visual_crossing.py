@@ -12,6 +12,7 @@ import httpx
 import pandas as pd
 from pathlib import Path
 from datetime import date
+import asyncio 
 
 VISUALCROSSING_API_KEY = os.getenv("VISUALCROSSING_API_KEY", "")
 DATA_DIR = Path("/weather")
@@ -70,6 +71,12 @@ async def fetch_weather_for_city(city_alias: str):
         rows.append(row)
         
     return rows
+
+async def upsert_daily_weather_csv_async(row: dict):
+    """
+    Versión asíncrona de upsert_daily_weather_csv usando asyncio.to_thread.
+    """
+    await asyncio.to_thread(upsert_daily_weather_csv, row)
 
 def upsert_daily_weather_csv(row: dict):
     """Upsert por (city, date) en data/synthetic_daily_weather.csv"""
