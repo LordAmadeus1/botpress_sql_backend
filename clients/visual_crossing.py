@@ -24,6 +24,7 @@ CITY_ALIAS = {
     "BURGOS": "Burgos, ES",
     "VITORIA": "Vitoria-Gasteiz, ES",
     "ZARAGOZA": "Zaragoza, ES",
+    "SAN SEBASTIAN" : "San Sebastian, ES"
 }
 
 # columns we need
