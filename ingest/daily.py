@@ -16,8 +16,10 @@ DEFAULT_VENUES = ["PAMPLONA", "BILBAO", "BURGOS", "VITORIA", "ZARAGOZA", "SAN SE
 async def run_daily_weather_ingest(venues: list[str] | None = None):
     """Consulta Visual Crossing para cada venue y guarda en CSV."""
     venues = venues or DEFAULT_VENUES
+    print("🚀 [ingest] Empezando ingest para venues:", venues)
     # Concult official names in Visual Crossing
     cities = [CITY_ALIAS.get(v, v) for v in venues]
+    rint("🔄 [ingest] Ciudades mapeadas a Visual Crossing:", cities)
 
     # current fetch
     tasks = [fetch_weather_for_city(c) for c in cities]
@@ -26,10 +28,13 @@ async def run_daily_weather_ingest(venues: list[str] | None = None):
     ok, errors = 0, []
     for res in results:
         if isinstance(res, Exception):
+            print(f"❌ [ingest] Error en fetch de {city}:", res)
             errors.append(str(res))
         else:
+            print(f"📥 [ingest] {len(res)} filas recibidas para {city}")
             for row in res:
                 await upsert_daily_weather_csv_async(row)
             ok += len(res)
 
+    print(f"🏁 [ingest] Finalizado: {ok} filas upserted, {len(errors)} errores")
     return {"result": "success", "weather_upserted": ok, "errors": errors}
