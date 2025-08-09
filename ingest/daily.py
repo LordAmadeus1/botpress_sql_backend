@@ -10,7 +10,7 @@ Original file is located at
 import asyncio
 from clients.visual_crossing import CITY_ALIAS, fetch_weather_for_city, upsert_daily_weather_csv
 
-DEFAULT_VENUES = ["PAMPLONA", "BILBAO", "BURGOS", "VITORIA", "ZARAGOZA"]
+DEFAULT_VENUES = ["PAMPLONA", "BILBAO", "BURGOS", "VITORIA", "ZARAGOZA", "SAN SEBASTIAN"]
 
 async def run_daily_weather_ingest(venues: list[str] | None = None):
     """Consulta Visual Crossing para cada venue y guarda en CSV."""
