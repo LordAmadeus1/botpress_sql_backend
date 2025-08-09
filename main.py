@@ -268,39 +268,38 @@ def fallback_to_csv(fn_name, params):
                 (filtered["p_week_number"] <= params.get("p_week_end"))
             ]
         return {"result": "success", "data": filtered.to_dict(orient="records")}
-
+    
     elif fn_name == "weather_forecast":
-        df = pd.read_csv(WEATHER_CSV)
-        df["date"] = pd.to_datetime(df["date"]).dt.date
-        p_date = pd.to_datetime(params.get("p_date")).date()
-        
+        BASE_URL = "https://botpress-sql-backend.onrender.com"
         city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
-        
+        p_date = pd.to_datetime(params.get("p_date")).date()
+    
         if not city or not p_date:
             return {"error": "Parámetros p_city/p_venue_name y p_date/day son requeridos"}
-
+    
         start_date = p_date
         end_date = start_date + pd.Timedelta(days=3)
     
-        filtered = df[
-            df["city"].str.contains(city, case=False, na=False) &
-            (df["date"].between(start_date, end_date))
-        ]
-
-        if filtered.empty:
-            BASE = "https://botpress-sql-backend.onrender.com/ingest/daily-weather"
-            requests.post(BASE, json={"venues": [city.upper()]})
-
+        weather_url = f"{BASE_URL}/weather"
+        weather_resp = requests.get(weather_url, params={"city": city, "date_str": start_date})
+        data = weather_resp.json().get("data", [])
+    
+        if not data:
+            ingest_url = f"{BASE_URL}/ingest/daily-weather"
+            requests.post(ingest_url, json={"venues": [city.upper()]})
             time.sleep(5)
-
-            df = pd.read_csv(WEATHER_CSV)
+    
+            weather_resp = requests.get(weather_url, params={"city": city, "date_str": start_date})
+            data = weather_resp.json().get("data", [])
+    
+        # Filtrar datos entre start_date y end_date
+        df = pd.DataFrame(data)
+        if not df.empty:
             df["date"] = pd.to_datetime(df["date"]).dt.date
-            filtered = df[
-                df["city"].str.contains(city, case=False, na=False) &
-                (df["date"].between(start_date, end_date))
-            ]
-            
-        return {"result": "success", "data": filtered.to_dict(orient="records")}
+            df = df[df["date"].between(start_date, end_date)]
+            data = df.to_dict(orient="records")
+    
+        return {"result": "success", "data": data}
     
     # Si no encontramos el KPI ni en CSV
     return {"result": "error", "message": f"No data found for {fn_name}"}
@@ -313,6 +312,7 @@ def read_root():
 @app.post("/query")
 async def run_query(request: Request):
   data = await request.json()
+  print("data: ", data)
   fn_name = data.get("function")
   params: Dict = data.get("params", {})
 
@@ -561,7 +561,7 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
     hay_futbol = any(df_today["has_football"].astype(str) == "1")
 
 
-  weather_url = f"{url}/daily_weather.csv"
+  weather_url = f"{url}/weather"
   df_weather = pd.read_csv(WEATHER_CSV)
   df_weather["date"] = pd.to_datetime(df_weather["date"]).dt.date
 
