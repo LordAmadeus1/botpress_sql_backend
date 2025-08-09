@@ -6,12 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import requests
 import os
+from typing import Optional
 from pathlib import Path
 import asyncio
-from datetime import datetime, date 
+from datetime import datetime, date, timedelta
 import calendar
-import asyncio
 from ingest.daily import run_daily_weather_ingest
+from clients.visual_crossing import fetch_weather_for_city
 
 app = FastAPI()
 
@@ -108,32 +109,31 @@ async def ingest_daily_weather(payload: dict = Body(default={})):
     return res
 
 async def handle_weather_forecast(params: dict):
+
     city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
-    p_date = pd.to_datetime(params.get("p_date")).date()
+    start_date_str = params.get("p_start_date")
+    end_date_str = params.get("p_end_date")
 
-    if not city or not p_date:
-        return {"error": "Parámetros p_city/p_venue_name y p_date/day son requeridos"}
+    if not city or not start_date_str:
+        return {
+            "error": "Faltan parámetros requeridos: p_venue_name/p_city o p_start_date"
+        }
 
-    start_date = p_date
-    end_date = start_date + pd.Timedelta(days=3)
+    start_dt = pd.to_datetime(start_date_str).date()
+    if end_date_str:
+        end_dt = pd.to_datetime(end_date_str).date()
+    else:
+        end_dt = start_dt + timedelta(days=3)
 
-    all_data = []
-    current = start_date
-    while current <= end_date:
-        resp = get_weather(city=city, date_str=str(current))
-        day_data = resp.get("data",[])
+    start_iso = start_dt.isoformat()
+    end_iso   = end_dt.isoformat()
 
-        if not day_data:
-            await run_daily_weather_ingest(venues=[city.upper()])
-            await asyncio.sleep(5)
+    rows = await fetch_weather_for_city(city, start_iso, end_iso)
 
-            resp =get_weather(city=city, date_str=str(current))
-            day_data = resp.get("data",[])
-
-        all_data.extend(day_data)
-        current += pd.Timedelta(days=1)
+    for row in rows:
+        await upsert_daily_weather_csv_async(row)
         
-    return {"result": "success", "data": all_data}
+    return {"result": "success", "data": rows}
 
 def fallback_to_csv(fn_name, params):
     #lee los csv sintéticos
@@ -447,8 +447,16 @@ def get_weekday_label(dt:date):
 def get_weekday_number(dt:date):
   return dt.weekday()
 
+async def ingest_one_day(city: str, date_str: str):
+    rows = await fetch_weather_for_city(city, date_str)
+    if not rows:
+        raise RuntimeError(f"No se obtuvieron datos para {city} {date_str}")
+    for row in rows:
+        await upsert_daily_weather_csv_async(row)
+
+
 @app.get("/daily_report")
-def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", tone:str ="funny"):
+async def get_daily_report(url: str, venue_name :str, date : datetime,lang:str="es", tone:str ="funny"):
 
   company = "PALLAPIZZA"
   target_date = pd.to_datetime(date).date()
@@ -564,20 +572,7 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
     events = df_today["title"].tolist()
     hay_futbol = any(df_today["has_football"].astype(str) == "1")
 
-
-  weather_url = f"{url}/weather"
-  df_weather = pd.read_csv(WEATHER_CSV)
-  df_weather["date"] = pd.to_datetime(df_weather["date"]).dt.date
-
-  target_date = pd.to_datetime(date).date()
-  date_str = target_date.isoformat()
-
-  # Intentar obtener de CSV local
-  weather_row = df_weather[
-    df_weather["city"].str.contains(venue_name, case=False, na=False) &
-    (df_weather["date"] == target_date)
-  ]
-
+  #weather
   def generar_frase_clima(clima):
     if clima:
         if "rain" in clima or "lluvia" in clima:
@@ -589,27 +584,47 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
         else:
             return f"El clima de hoy es {clima}."
     return "No tengo información del clima para hoy."
+      
+  weather_url = f"{url}/weather"
+  df_weather = pd.read_csv(WEATHER_CSV)
+  df_weather["date"] = pd.to_datetime(df_weather["date"]).dt.date
+
+  target_date = pd.to_datetime(date).date()
+  date_str = target_date.isoformat()
+
+  mask = (df_weather["city"].str.contains(venue_name, case=False, na=False) &
+    (df_weather["date"] == target_date))
+
+  weather_row = df_weather[mask]
 
   if not weather_row.empty:
+    row = weather_row.iloc[0]
     temperatura = weather_row.iloc[0]["temp"]
     clima = str(weather_row.iloc[0]["conditions"]).lower()
     icono = weather_row.iloc[0]["icon"]
     frase_clima = generar_frase_clima(clima)
+
   else:
     try:
-        weather_resp = requests.get(weather_url, params={"city": venue_name, "date": date_str})
-        if weather_resp.status_code == 200:
-            weather_data = weather_resp.json()
-            temperatura = weather_data.get("temp")
-            clima = weather_data.get("conditions", "").lower()
-            icono = weather_data.get("icon", "")
+        await ingest_one_day(venue_name, date_str)
+        df = pd.read_csv(WEATHER_CSV)
+        df["date"] = pd.to_datetime(df["date"]).dt.date
+        weather_row = df[df["city"].str.contains(venue_name, case=False, na=False) &
+                (df["date"] == target_date)]
+
+        if not weather_row.empty:
+            row = weather_row.iloc[0]
+            temperatura = row["temp"]
+            clima = str(row["conditions"]).lower()
+            icono = row["icon"]
             frase_clima = generar_frase_clima(clima)
         else:
             temperatura = clima = icono = None
-            frase_clima = "No se pudo obtener el clima."
+            frase_clima = "No tengo información del clima para hoy."
+
     except Exception as e:
         temperatura = clima = icono = None
-        frase_clima = f"Error al procesar clima: {e}"
+        frase_clima = f"No se pudo ingestar clima: {e}"
 
   #cash_flow  
   cashflow_df = pd.read_csv(CASHFLOW_CSV)
@@ -632,6 +647,9 @@ def get_daily_report(url: str, venue_name :str, date : datetime, lang:str="es", 
   else:
     daily_income_var = None
 
+
+  if "frase_clima" not in locals():
+      frase_clima = "No tengo información detallada del clima."
   return {
       "result": "success",
       "kpi_data": {
