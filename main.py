@@ -107,6 +107,34 @@ async def ingest_daily_weather(payload: dict = Body(default={})):
     res = await run_daily_weather_ingest(venues=venues)
     return res
 
+async def handle_weather_forecast(pamars: dict):
+    city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
+    p_date = pd.to_datetime(params.get("p_date")).date()
+
+    if not city or not p_date:
+        return {"error": "Parámetros p_city/p_venue_name y p_date/day son requeridos"}
+
+    start_date = p_date
+    end_date = start_date + pd.Timedelta(days=3)
+
+    all_data = []
+    current = start_date
+    while current <= end_date:
+        resp = get_weather(city=city, date_str=str(current))
+        day_data = resp.get("data",[])
+
+        if not day_data:
+            await run_daily_weather_ingest(venues=[city.upper()])
+            await asyncio.sleep(5)
+
+            resp =get_weather(city=city, date_str=str(current))
+            day_data = resp.get("data",[])
+
+        all_data.extend(day_data)
+        curent += pd.Timedelta(days=1)
+        
+    return {"result": "success", "data": all_data}
+
 def fallback_to_csv(fn_name, params):
     #lee los csv sintéticos
     if fn_name == "cash_flow_synthetic_by_week":
@@ -282,35 +310,7 @@ def fallback_to_csv(fn_name, params):
                 (filtered["p_week_number"] <= params.get("p_week_end"))
             ]
         return {"result": "success", "data": filtered.to_dict(orient="records")}
-    
-    elif fn_name == "weather_forecast":
-        city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
-        p_date = pd.to_datetime(params.get("p_date")).date()
-    
-        if not city or not p_date:
-            return {"error": "Parámetros p_city/p_venue_name y p_date/day son requeridos"}
-    
-        start_date = p_date
-        end_date = start_date + pd.Timedelta(days=3)
-
-        all_data = []
-        current = start_date
-        while current <= end_date:
-            resp = get_weather(city=city, date_str=str(current))
-            day_data = resp.get("data",[])
-
-            if not day_data:
-                await run_daily_weather_ingest(venues=[city.upper()])
-                await asyncio.sleep(5)
-
-                resp =get_weather(city=city, date_str=str(current))
-                day_data = resp.get("data",[])
-
-            all_data.extend(day_data)
-            curent += pd.Timedelta(days=1)
-            
-        return {"result": "success", "data": all_data}
-    
+        
     # Si no encontramos el KPI ni en CSV
     return {"result": "error", "message": f"No data found for {fn_name}"}
     
@@ -327,12 +327,13 @@ async def log_requests(request: Request, call_next):
 
 @app.post("/query")
 async def run_query(request: Request):
-
-  print("Hola...")  
   data = await request.json()
   print("data: ", data)
   fn_name = data.get("function")
   params: Dict = data.get("params", {})
+
+  if fn_name="weather_forecast":
+      return await handle_weather_forecast(params)
 
   try:
     print("🔵 Parámetros recibidos:", params)
