@@ -12,7 +12,7 @@ import asyncio
 from datetime import datetime, date, timedelta
 import calendar
 from ingest.daily import run_daily_weather_ingest
-from clients.visual_crossing import fetch_weather_for_city
+from clients.visual_crossing import fetch_weather_for_city, upsert_daily_weather_csv_async
 
 app = FastAPI()
 
