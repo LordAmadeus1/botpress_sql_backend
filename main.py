@@ -332,7 +332,7 @@ async def run_query(request: Request):
   fn_name = data.get("function")
   params: Dict = data.get("params", {})
 
-  if fn_name="weather_forecast":
+  if fn_name == "weather_forecast":
       return await handle_weather_forecast(params)
 
   try:
