@@ -270,15 +270,15 @@ def fallback_to_csv(fn_name, params):
 
     elif fn_name == "weather_forecast":
         df = pd.read_csv(WEATHER_CSV)
-        df["date"] = pd.to_datetime(df["date"])
+        df["date"] = pd.to_datetime(df["date"]).dt.date
+        p_date = pd.to_datetime(params.get("p_date")).date()
         
         city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
-        date_str = params.get("day") or params.get("p_date")
-
-        if not city or not date_str:
+        
+        if not city or not p_date:
             return {"error": "Parámetros p_city/p_venue_name y p_date/day son requeridos"}
 
-        start_date = pd.to_datetime(date_str).date()
+        start_date = p_date
         end_date = start_date + pd.Timedelta(days=3)
     
         filtered = df[
