@@ -1,4 +1,4 @@
-venue_name,year,week_number,monday_income_predicted,tuesday_income_predicted,wednesday_income_predicted,thursday_income_predicted,friday_income_predicted,saturday_income_predicted,sunday_income_predicted
+p_venue_name,p_year,p_week_number,monday_income_predicted,tuesday_income_predicted,wednesday_income_predicted,thursday_income_predicted,friday_income_predicted,saturday_income_predicted,sunday_income_predicted
 BILBAO,2025,1,325.93,315.21,657.83,479.28,1207.19,1691.02,1061.43
 BILBAO,2025,2,337.86,370.33,601.54,469.11,1083.26,1537.21,1009.62
 BILBAO,2025,3,336.17,344.34,534.76,568.16,1201.7,1912.46,848.54
