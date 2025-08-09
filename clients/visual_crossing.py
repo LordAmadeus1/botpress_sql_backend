@@ -36,7 +36,7 @@ WEATHER_COLUMNS = [
 ]
 
 async def fetch_weather_for_city(city_alias: str):
-     print(f"🌐 [fetch_weather_for_city] Iniciando fetch para: {city_alias}")
+    print(f"🌐 [fetch_weather_for_city] Iniciando fetch para: {city_alias}")
     """Llama a Visual Crossing para city_alias (ej. 'Vitoria-Gasteiz') para 'today'."""
     if not VISUALCROSSING_API_KEY:
         raise RuntimeError("VISUALCROSSING_API_KEY no configurada")
@@ -73,7 +73,7 @@ async def fetch_weather_for_city(city_alias: str):
         }
         rows.append(row)
         
-     print(f"✅ [fetch_weather_for_city] Construidos {len(rows)} rows para {city_alias}")
+    print(f"✅ [fetch_weather_for_city] Construidos {len(rows)} rows para {city_alias}")
     return rows
 
 async def upsert_daily_weather_csv_async(row: dict):
