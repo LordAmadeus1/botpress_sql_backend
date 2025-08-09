@@ -107,7 +107,7 @@ async def ingest_daily_weather(payload: dict = Body(default={})):
     res = await run_daily_weather_ingest(venues=venues)
     return res
 
-async def handle_weather_forecast(pamars: dict):
+async def handle_weather_forecast(params: dict):
     city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
     p_date = pd.to_datetime(params.get("p_date")).date()
 
