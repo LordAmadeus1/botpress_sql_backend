@@ -114,19 +114,25 @@ async def ingest_daily_weather(payload: dict = Body(default={})):
 async def handle_weather_forecast(params: dict):
 
     city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
-    start_date_str = params.get("p_start_date")
-    end_date_str = params.get("p_end_date")
 
     if not city or not start_date_str:
         return {
-            "error": "Faltan parámetros requeridos: p_venue_name/p_city o p_start_date"
+            "error": "Faltan parámetros requeridos: p_venue_name/p_city"
         }
 
+    start_date_str = params.get("p_start_date")
+    end_date_str = params.get("p_end_date")
+
+    if not start_date_str:
+        today_iso      = date.today().isoformat()
+        start_date_str = today_iso
+        end_date_str   = today_iso
+    elif not end_date_str:
+        # Si solo falta end_date, lo igualamos a start_date
+        end_date_str   = start_date_str
+
     start_dt = pd.to_datetime(start_date_str).date()
-    if end_date_str:
-        end_dt = pd.to_datetime(end_date_str).date()
-    else:
-        end_dt = start_dt + timedelta(days=3)
+    end_dt   = pd.to_datetime(end_date_str).date()
 
     start_iso = start_dt.isoformat()
     end_iso   = end_dt.isoformat()
