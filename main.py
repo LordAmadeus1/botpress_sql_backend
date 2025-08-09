@@ -105,7 +105,10 @@ def get_weather(city: str, date_str: str):
 @app.post("/ingest/daily-weather")
 async def ingest_daily_weather(payload: dict = Body(default={})):
     venues = payload.get("venues")  # opcional; si no, usa las por defecto
-    res = await run_daily_weather_ingest(venues=venues)
+    start_date = payload.get("start_date")
+    end_date   = payload.get("end_date") 
+    
+    res = await run_daily_weather_ingest(venues=venues, start_date=start_date, end_date=end_date)
     return res
 
 async def handle_weather_forecast(params: dict):
