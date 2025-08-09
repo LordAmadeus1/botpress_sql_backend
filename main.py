@@ -304,6 +304,10 @@ def fallback_to_csv(fn_name, params):
     # Si no encontramos el KPI ni en CSV
     return {"result": "error", "message": f"No data found for {fn_name}"}
     
+@app.get("/ping")
+async def ping():
+    print("💬 ping recibido")
+    return {"message": "pong"}
 
 @app.get("/")
 def read_root():
