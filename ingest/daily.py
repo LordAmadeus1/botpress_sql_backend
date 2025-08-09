@@ -8,7 +8,8 @@ Original file is located at
 """
 
 import asyncio
-from clients.visual_crossing import CITY_ALIAS, fetch_weather_for_city, upsert_daily_weather_csv
+from clients.visual_crossing import CITY_ALIAS, fetch_weather_for_city, upsert_daily_weather_csv_async
+
 
 DEFAULT_VENUES = ["PAMPLONA", "BILBAO", "BURGOS", "VITORIA", "ZARAGOZA", "SAN SEBASTIAN"]
 
