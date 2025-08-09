@@ -10,7 +10,7 @@ from pathlib import Path
 import asyncio
 from datetime import datetime, date 
 import calendar
-import time
+import asyncio
 from ingest.daily import run_daily_weather_ingest
 
 app = FastAPI()
@@ -92,6 +92,20 @@ kpi_function_map = {
         "args": ["p_company_name", "p_year", "p_month_number"]
     }
     }
+
+@app.get("/weather")
+def get_weather(city: str, date_str: str):
+    if not os.path.exists(WEATHER_CSV):
+        return {"result": "error", "message": "No weather data"}
+    df = pd.read_csv(WEATHER_CSV)
+    filtered = df[df["city"].str.contains(city, case=False, na=False) & (df["date"].astype(str) == str(date_str).strip())]
+    return {"result": "success", "data": filtered.to_dict(orient="records")}
+
+@app.post("/ingest/daily-weather")
+async def ingest_daily_weather(payload: dict = Body(default={})):
+    venues = payload.get("venues")  # opcional; si no, usa las por defecto
+    res = await run_daily_weather_ingest(venues=venues)
+    return res
 
 def fallback_to_csv(fn_name, params):
     #lee los csv sintéticos
@@ -270,7 +284,6 @@ def fallback_to_csv(fn_name, params):
         return {"result": "success", "data": filtered.to_dict(orient="records")}
     
     elif fn_name == "weather_forecast":
-        BASE_URL = "https://botpress-sql-backend.onrender.com"
         city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
         p_date = pd.to_datetime(params.get("p_date")).date()
     
@@ -279,35 +292,28 @@ def fallback_to_csv(fn_name, params):
     
         start_date = p_date
         end_date = start_date + pd.Timedelta(days=3)
-    
-        weather_url = f"{BASE_URL}/weather"
-        weather_resp = requests.get(weather_url, params={"city": city, "date_str": start_date})
-        data = weather_resp.json().get("data", [])
-    
-        if not data:
-            ingest_url = f"{BASE_URL}/ingest/daily-weather"
-            requests.post(ingest_url, json={"venues": [city.upper()]})
-            time.sleep(5)
-    
-            weather_resp = requests.get(weather_url, params={"city": city, "date_str": start_date})
-            data = weather_resp.json().get("data", [])
-    
-        # Filtrar datos entre start_date y end_date
-        df = pd.DataFrame(data)
-        if not df.empty:
-            df["date"] = pd.to_datetime(df["date"]).dt.date
-            df = df[df["date"].between(start_date, end_date)]
-            data = df.to_dict(orient="records")
-    
-        return {"result": "success", "data": data}
+
+        all_data = []
+        current = start_date
+        while current <= end_date:
+            resp = get_weather(city=city, date_str=str(current))
+            day_data = resp.get("data",[])
+
+            if not day_data:
+                await run_daily_weather_ingest(venues=[city.upper()])
+                await asyncio.sleep(5)
+
+                resp =get_weather(city=city, date_str=str(current))
+                day_data = resp.get("data",[])
+
+            all_data.extend(day_data)
+            curent += pd.Timedelta(days=1)
+            
+        return {"result": "success", "data": all_data}
     
     # Si no encontramos el KPI ni en CSV
     return {"result": "error", "message": f"No data found for {fn_name}"}
     
-@app.get("/ping")
-async def ping():
-    print("💬 ping recibido")
-    return {"message": "pong"}
 
 @app.get("/")
 def read_root():
@@ -371,21 +377,6 @@ async def run_query(request: Request):
   except Exception as e:
     print("error al ejecutar", e)
     return {"status": "error", "message": str(e)}
-
-@app.get("/weather")
-def get_weather(city: str, date_str: str):
-    if not os.path.exists(WEATHER_CSV):
-        return {"result": "error", "message": "No weather data"}
-    df = pd.read_csv(WEATHER_CSV)
-    filtered = df[df["city"].str.contains(city, case=False, na=False) & (df["date"].astype(str) == str(date_str).strip())]
-    return {"result": "success", "data": filtered.to_dict(orient="records")}
-
-@app.post("/ingest/daily-weather")
-async def ingest_daily_weather(payload: dict = Body(default={})):
-    venues = payload.get("venues")  # opcional; si no, usa las por defecto
-    res = await run_daily_weather_ingest(venues=venues)
-    return res
-
 
 @app.get("/events")
 def get_events(
