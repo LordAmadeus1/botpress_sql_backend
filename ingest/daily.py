@@ -9,11 +9,11 @@ Original file is located at
 
 import asyncio
 from clients.visual_crossing import CITY_ALIAS, fetch_weather_for_city, upsert_daily_weather_csv_async
-
+from typing import Optional 
 
 DEFAULT_VENUES = ["PAMPLONA", "BILBAO", "BURGOS", "VITORIA", "ZARAGOZA", "SAN SEBASTIAN"]
 
-async def run_daily_weather_ingest(venues: list[str] | None = None):
+async def run_daily_weather_ingest(venues: list[str] | None = None, start_date: Optional[str] = None, end_date: Optional[str] = None):
     """Consulta Visual Crossing para cada venue y guarda en CSV."""
     venues = venues or DEFAULT_VENUES
     print("🚀 [ingest] Empezando ingest para venues:", venues)
@@ -21,17 +21,20 @@ async def run_daily_weather_ingest(venues: list[str] | None = None):
     cities = [CITY_ALIAS.get(v, v) for v in venues]
     print("🔄 [ingest] Ciudades mapeadas a Visual Crossing:", cities)
 
+    if not start_date:
+        start_date = date.today().isoformat()
+
     # current fetch
-    tasks = [fetch_weather_for_city(c) for c in cities]
+    tasks = [fetch_weather_for_city(c, start_date, end_date) for c in cities]
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     ok, errors = 0, []
-    for res in results:
+    for city, res in zip(cities, results):
         if isinstance(res, Exception):
-            print(f"❌ [ingest] Error en fetch de: {cities}", res)
-            errors.append(str(res))
+            print(f"❌ [ingest] Error en fetch de {city}: {res}")
+            errors.append(f"{city}: {res}")
         else:
-            print(f"📥 [ingest] {len(res)} filas recibidas para {cities}")
+            print(f"📥 [ingest] {len(res)} filas recibidas para {city}")
             for row in res:
                 await upsert_daily_weather_csv_async(row)
             ok += len(res)
