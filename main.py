@@ -115,7 +115,7 @@ async def handle_weather_forecast(params: dict):
 
     city = str(params.get("p_venue_name") or params.get("p_city") or "").strip()
 
-    if not city or not start_date_str:
+    if not city:
         return {
             "error": "Faltan parámetros requeridos: p_venue_name/p_city"
         }
