@@ -5,6 +5,7 @@ from db import fn_get_connection
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import requests
+import csv
 import os
 from typing import Optional
 from pathlib import Path
@@ -28,6 +29,8 @@ MOTIVATION_CSV = "data/motivational_phrases.csv"
 
 DATA_DIR = Path("/weather")
 WEATHER_CSV = str(DATA_DIR / "daily_weather.csv")
+
+REPORTS_CSV = "data/daily_reports.csv"
 
 app.add_middleware(
     CORSMiddleware,
@@ -680,3 +683,19 @@ async def get_daily_report(url: str, venue_name :str, date : datetime,lang:str="
           "hay_futbol": hay_futbol
       }
   }
+
+
+@app.post("/save_report_csv")
+async def save_report_csv(request: Request):
+    data = await request.json()
+
+    # Si el archivo no existe, crea cabeceras
+    file_exists = os.path.exists(REPORTS_CSV)
+
+    with open(REPORTS_CSV, "a", newline="", encoding="utf-8") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=data.keys())
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(data)
+
+    return {"status": "success", "message": "Reporte guardado"}
