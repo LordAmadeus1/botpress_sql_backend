@@ -30,7 +30,7 @@ MOTIVATION_CSV = "data/motivational_phrases.csv"
 DATA_DIR = Path("/weather")
 WEATHER_CSV = str(DATA_DIR / "daily_weather.csv")
 
-REPORTS_CSV = "data/daily_reports.csv"
+REPORTS_CSV = str(DATA_DIR / "daily_reports.csv")
 
 app.add_middleware(
     CORSMiddleware,
