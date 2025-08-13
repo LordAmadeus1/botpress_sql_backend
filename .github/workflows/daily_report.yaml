@@ -1,0 +1,26 @@
+name: Daily Report Generator
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # 04:00 UTC = 06:00 Madrid (en verano)
+  workflow_dispatch: # Permite lanzarlo manualmente
+
+jobs:
+  generate-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install axios
+
+      - name: Run report generator
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: node scripts/reportGenerator.js
