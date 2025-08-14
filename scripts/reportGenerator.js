@@ -1,5 +1,4 @@
-import axios from "axios";
-
+const axios = require("axios");
 const DEFAULT_VENUES = ["PAMPLONA", "BILBAO", "BURGOS", "VITORIA", "ZARAGOZA", "SAN SEBASTIAN"];
 
 async function run() {
