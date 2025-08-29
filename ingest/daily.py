@@ -9,7 +9,8 @@ Original file is located at
 
 import asyncio
 from clients.visual_crossing import CITY_ALIAS, fetch_weather_for_city, upsert_daily_weather_csv_async
-from typing import Optional 
+from typing import Optional
+from datetime import date
 
 DEFAULT_VENUES = ["PAMPLONA", "BILBAO", "BURGOS", "VITORIA", "ZARAGOZA", "SAN SEBASTIAN"]
 
